@@ -32,6 +32,7 @@ public class UserService {
                     throw new AppException(ErrorCode.DUPLICATED_USER_NAME, "UserName이 중복됩니다");
                 });
 
+        log.info("service " + userJoinRequest.getUserName());
         //user를 db에 저장
         User user = userRepository.save(toEntity(userJoinRequest, encoder.encode(userJoinRequest.getPassword()),UserRole.USER));
         if(user.getId() < 1) throw new AppException(ErrorCode.DATABASE_ERROR, "데이터베이스 에러 발생");

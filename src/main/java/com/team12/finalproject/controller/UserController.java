@@ -16,14 +16,10 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "swagger test hello";
-    }
-
     //User 회원가입
     @PostMapping("/join")
     public ResponseEntity<UserJoinResponse> join(@RequestBody UserJoinRequest userJoinRequest) {
+        log.info("controller " + userJoinRequest.getUserName());
         return ResponseEntity.ok().body(userService.join(userJoinRequest));
     }
 }
