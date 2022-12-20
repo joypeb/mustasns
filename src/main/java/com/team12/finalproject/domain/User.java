@@ -20,10 +20,11 @@ public class User {
     private int id;
 
     private String password;
-    private UserRole role;
     private String userName;
     private LocalDateTime deletedAt;
     private LocalDateTime registeredAt;
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 }
