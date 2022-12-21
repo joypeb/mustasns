@@ -5,6 +5,7 @@ import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -21,9 +22,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public String postList(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
-
-        return "";
+    public ResponseEntity<Page> postList(@PageableDefault(size = 20, sort = "registeredAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok().body(postService.postList(pageable));
     }
 
     @PostMapping
