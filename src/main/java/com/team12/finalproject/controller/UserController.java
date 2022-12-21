@@ -28,8 +28,7 @@ public class UserController {
     //User 로그인
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest) {
-        UserLoginResponse userLoginResponse = UserLoginResponse.builder()
-                .jwt(userService.login(userLoginRequest)).build();
-        return ResponseEntity.ok().body(userLoginResponse);
+        return ResponseEntity.ok()
+                .body(UserLoginResponse.builder().jwt(userService.login(userLoginRequest)).build());
     }
 }

@@ -59,8 +59,8 @@ public class UserService {
         );
 
         //유저 비밀번호 확인
-        if(!encoder.matches(userLoginRequest.getPassword(), user.getUserName()))
-            throw new AppException(ErrorCode.INVALID_PASSWORD,"패스워드가 틀립니다");
+        boolean passwordMatch = encoder.matches(userLoginRequest.getPassword(), user.getPassword());
+        if(!passwordMatch) throw new AppException(ErrorCode.INVALID_PASSWORD,"패스워드가 틀립니다");
 
         //jwt발행
         return JwtTokenUtils.createToken(user.getUserName(),secretKey,expireTimems);

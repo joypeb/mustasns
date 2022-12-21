@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class UserJoinResponse {
+public class UserJoinResponse<T> {
     private String resultCode;
-    private UserJoinResult result;
+    private T result;
 }

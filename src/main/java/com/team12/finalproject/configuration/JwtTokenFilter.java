@@ -59,5 +59,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);*/
+
+        //헤더에서 토큰 꺼내기
+        final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        log.info("authorizationHeader:{}", authorizationHeader);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                "", null, List.of(new SimpleGrantedAuthority("USER"))
+        );
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        filterChain.doFilter(request, response);
     }
 }

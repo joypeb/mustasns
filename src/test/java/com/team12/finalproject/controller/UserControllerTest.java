@@ -73,12 +73,12 @@ class UserControllerTest {
     @DisplayName("로그인 성공")
     @WithMockUser
     void login_s() throws Exception {
-        when(userService.login(any())).thenReturn("");
+        when(userService.login(new UserLoginRequest("user1","1234"))).thenReturn("token");
 
         mockMvc.perform(post("/api/v1/users/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(new UserLoginRequest("",""))))
+                .content(objectMapper.writeValueAsBytes(new UserLoginRequest("user1","1234"))))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
