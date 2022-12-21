@@ -22,7 +22,6 @@ public class UserController {
     //User 회원가입
     @PostMapping("/join")
     public ResponseEntity<Response> join(@RequestBody UserJoinRequest userJoinRequest) {
-        log.info("controller " + userJoinRequest.getUserName());
         return ResponseEntity.ok().body(userService.join(userJoinRequest));
     }
 
