@@ -9,8 +9,10 @@ import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.repository.UserRepository;
+import com.team12.finalproject.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+
+    @Value("${jwt.token.secret}")
+    private String secretKey;
+    private long expireTimems = 60 * 60 * 1000;
 
     //user 회원가입
     public UserJoinResponse join(UserJoinRequest userJoinRequest) {
@@ -47,7 +53,16 @@ public class UserService {
 
     //user 로그인
     public String login(UserLoginRequest userLoginRequest) {
+        //유저 아이디 확인
+        User user = userRepository.findByUserName(userLoginRequest.getUserName()).orElseThrow(
+                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%d는 없는 userName입니다",userLoginRequest.getUserName()))
+        );
 
-        return "";
+        //유저 비밀번호 확인
+        if(!encoder.matches(userLoginRequest.getPassword(), user.getUserName()))
+            throw new AppException(ErrorCode.INVALID_PASSWORD,"패스워드가 틀립니다");
+
+        //jwt발행
+        return JwtTokenUtils.createToken(user.getUserName(),secretKey,expireTimems);
     }
 }
