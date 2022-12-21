@@ -2,6 +2,7 @@ package com.team12.finalproject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
@@ -43,7 +44,7 @@ class UserControllerTest {
     void join_s() throws Exception {
         UserJoinRequest userJoinRequest = new UserJoinRequest("user1","1234");
         when(userService.join(userJoinRequest))
-                .thenReturn(new UserJoinResponse("SUCCESS",new UserJoinResult(
+                .thenReturn(new Response<UserJoinResult>("SUCCESS",new UserJoinResult(
                         1,userJoinRequest.getUserName())));
 
         mockMvc.perform(post("/api/v1/users/join")

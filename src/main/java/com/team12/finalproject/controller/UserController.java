@@ -1,5 +1,6 @@
 package com.team12.finalproject.controller;
 
+import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
@@ -20,7 +21,7 @@ public class UserController {
 
     //User 회원가입
     @PostMapping("/join")
-    public ResponseEntity<UserJoinResponse> join(@RequestBody UserJoinRequest userJoinRequest) {
+    public ResponseEntity<Response> join(@RequestBody UserJoinRequest userJoinRequest) {
         log.info("controller " + userJoinRequest.getUserName());
         return ResponseEntity.ok().body(userService.join(userJoinRequest));
     }

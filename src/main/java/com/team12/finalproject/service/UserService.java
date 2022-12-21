@@ -2,6 +2,7 @@ package com.team12.finalproject.service;
 
 import com.team12.finalproject.domain.User;
 import com.team12.finalproject.domain.UserRole;
+import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
@@ -31,7 +32,7 @@ public class UserService {
     private long expireTimems = 60 * 60 * 1000;
 
     //user 회원가입
-    public UserJoinResponse join(UserJoinRequest userJoinRequest) {
+    public Response<UserJoinResult> join(UserJoinRequest userJoinRequest) {
 
         //user중복 체크
         userRepository.findByUserName(userJoinRequest.getUserName())
@@ -45,10 +46,8 @@ public class UserService {
         if(user.getId() < 1) throw new AppException(ErrorCode.DATABASE_ERROR, "데이터베이스 에러 발생");
 
         //response 작성
-        return UserJoinResponse.builder()
-                .resultCode("SUCCESS")
-                .result(new UserJoinResult(user.getId(),user.getUserName()))
-                .build();
+        Response userJoinResponse = Response.builder().result("SUCCESS").result(new UserJoinResult(user.getId(),user.getUserName())).build();
+        return userJoinResponse;
     }
 
     //user 로그인
