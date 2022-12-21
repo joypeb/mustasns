@@ -2,6 +2,8 @@ package com.team12.finalproject.controller;
 
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginResponse;
 import com.team12.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,5 +23,13 @@ public class UserController {
     public ResponseEntity<UserJoinResponse> join(@RequestBody UserJoinRequest userJoinRequest) {
         log.info("controller " + userJoinRequest.getUserName());
         return ResponseEntity.ok().body(userService.join(userJoinRequest));
+    }
+
+    //User 로그인
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest) {
+        UserLoginResponse userLoginResponse = UserLoginResponse.builder()
+                .jwt(userService.login(userLoginRequest)).build();
+        return ResponseEntity.ok().body(userLoginResponse);
     }
 }

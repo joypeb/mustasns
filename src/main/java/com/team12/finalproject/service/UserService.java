@@ -5,6 +5,7 @@ import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.repository.UserRepository;
@@ -42,5 +43,11 @@ public class UserService {
                 .resultCode("SUCCESS")
                 .result(new UserJoinResult(user.getId(),user.getUserName()))
                 .build();
+    }
+
+    //user 로그인
+    public String login(UserLoginRequest userLoginRequest) {
+
+        return "";
     }
 }

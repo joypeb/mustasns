@@ -1,9 +1,11 @@
 package com.team12.finalproject.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.service.UserService;
@@ -65,5 +67,19 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsBytes(new UserJoinRequest())))
                 .andDo(print())
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("로그인 성공")
+    @WithMockUser
+    void login_s() throws Exception {
+        when(userService.login(any())).thenReturn("");
+
+        mockMvc.perform(post("/api/v1/users/login")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(new UserLoginRequest("",""))))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }
