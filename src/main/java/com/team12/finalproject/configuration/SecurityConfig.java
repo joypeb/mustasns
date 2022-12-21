@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 //.antMatchers("/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/users/join", "/api/v1/users/login","/swagger-ui/**").permitAll() // join, login은 언제나 가능
-                //.antMatchers(HttpMethod.POST, "/api/v1/**").authenticated() //접근 요청 막기 인증 추가
+                .antMatchers(HttpMethod.POST, "/api/v1/**").authenticated() //접근 요청 막기 인증 추가
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀

@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.team12.finalproject.domain.dto.userJoin.UserJoinRequest.toEntity;
 
 @Service
@@ -30,6 +33,7 @@ public class UserService {
     @Value("${jwt.token.secret}")
     private String secretKey;
     private long expireTimems = 60 * 60 * 1000;
+    private long refreshExpireTimems = 60 * 60 * 10000;
 
     //user 회원가입
     public Response<UserJoinResult> join(UserJoinRequest userJoinRequest) {
@@ -50,7 +54,7 @@ public class UserService {
     }
 
     //user 로그인
-    public String login(UserLoginRequest userLoginRequest) {
+    public Map<String,String> login(UserLoginRequest userLoginRequest) {
         //유저 아이디 확인
         User user = userRepository.findByUserName(userLoginRequest.getUserName()).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%d는 없는 userName입니다",userLoginRequest.getUserName()))
@@ -61,6 +65,16 @@ public class UserService {
         if(!passwordMatch) throw new AppException(ErrorCode.INVALID_PASSWORD,"패스워드가 틀립니다");
 
         //jwt발행
-        return JwtTokenUtils.createToken(user.getUserName(),secretKey,expireTimems);
+        String token = JwtTokenUtils.createToken(user.getUserName(),secretKey,expireTimems);
+        String refreshToken = JwtTokenUtils.createRefreshToken(user.getUserName(),secretKey,refreshExpireTimems);
+
+        //refreshToken을 db에 저장
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        Map<String,String> tokenMap = new HashMap<>();
+        tokenMap.put("token",token);
+        tokenMap.put("refreshToken",refreshToken);
+        return tokenMap;
     }
 }

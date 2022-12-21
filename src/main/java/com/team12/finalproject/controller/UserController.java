@@ -8,8 +8,11 @@ import com.team12.finalproject.domain.dto.userLogin.UserLoginResponse;
 import com.team12.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -28,7 +31,13 @@ public class UserController {
     //User 로그인
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest) {
+        Map<String,String> tokenMap = userService.login(userLoginRequest);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("token", tokenMap.get("token"));
+        headers.add("refreshToken", tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
-                .body(UserLoginResponse.builder().jwt(userService.login(userLoginRequest)).build());
+                .headers(headers)
+                .body(UserLoginResponse.builder().jwt(tokenMap.get("token")).build());
     }
 }

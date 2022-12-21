@@ -20,6 +20,18 @@ public class JwtTokenUtils {
                 .compact();
     }
 
+    public static String createRefreshToken(String userName, String key, long expireTimeMs) {
+        Claims claims = Jwts.claims();
+        claims.put("userName",userName);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis()+expireTimeMs))
+                .signWith(SignatureAlgorithm.HS256,key)
+                .compact();
+    }
+
     private static Claims extractClaims(String token, String key) {
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
