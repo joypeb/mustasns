@@ -82,4 +82,36 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("로그인 실패 - username틀림")
+    @WithMockUser
+    void login_f1() throws Exception{
+        when(userService.login(any())).thenThrow(
+                new AppException(ErrorCode.USERNAME_NOT_FOUND,"userName이 틀렸습니다")
+        );
+
+        mockMvc.perform(post("/api/v1/users/login")
+                .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(new UserLoginRequest("user1","1234"))))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - password틀림")
+    @WithMockUser
+    void login_f2() throws Exception{
+        when(userService.login(any())).thenThrow(
+                new AppException(ErrorCode.INVALID_PASSWORD,"password가 틀렸습니다")
+        );
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new UserLoginRequest("user1","1234"))))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }
