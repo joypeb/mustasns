@@ -19,6 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -26,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(UserController.class)
 class UserControllerTest {
 
     @Autowired
@@ -74,7 +77,8 @@ class UserControllerTest {
     @DisplayName("로그인 성공")
     @WithMockUser
     void login_s() throws Exception {
-        when(userService.login(new UserLoginRequest("user1","1234"))).thenReturn("token");
+        Map<String,String> map = new HashMap<>();
+        when(userService.login(new UserLoginRequest("user1","1234"))).thenReturn(map);
 
         mockMvc.perform(post("/api/v1/users/login")
                 .with(csrf())
