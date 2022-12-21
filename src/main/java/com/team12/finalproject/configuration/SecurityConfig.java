@@ -1,5 +1,6 @@
 package com.team12.finalproject.configuration;
 
+import com.team12.finalproject.repository.UserRepository;
 import com.team12.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     @Value("${jwt.token.secret}")
     private String secretKey;
 
@@ -28,15 +30,17 @@ public class SecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                //.antMatchers("/**").hasRole("ADMIN")
-                .antMatchers("/api/v1/users/join", "/api/v1/users/login","/swagger-ui/**").permitAll() // join, login은 언제나 가능
-                .antMatchers(HttpMethod.POST, "/api/v1/**").authenticated() //접근 요청 막기 인증 추가
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/api/v1/users/join", "/api/v1/users/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/posts","/api/v1/posts/**").permitAll()// join, login은 언제나 가능
+                .antMatchers(HttpMethod.POST, "/api/v1/posts").authenticated()
+                .antMatchers(HttpMethod.PUT,"/api/v1/posts/**").authenticated()
+                .antMatchers(HttpMethod.DELETE,"/api/v1/posts/**").authenticated()
+                .antMatchers(HttpMethod.POST,"/api/v1/users/**/role/change").hasRole("ADMIN")
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
                 .and()
-                .addFilterBefore(new JwtTokenFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
-                // UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용 하라는 뜻 입니다.
+                .addFilterBefore(new JwtTokenFilter(userService, userRepository, secretKey), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

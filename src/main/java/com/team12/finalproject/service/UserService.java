@@ -49,15 +49,15 @@ public class UserService {
         if(user.getId() < 1) throw new AppException(ErrorCode.DATABASE_ERROR, "데이터베이스 에러 발생");
 
         //response 작성
-        Response userJoinResponse = Response.builder().resultCode("SUCCESS").result(new UserJoinResult(user.getId(),user.getUserName())).build();
-        return userJoinResponse;
+        UserJoinResult userJoinResult = new UserJoinResult(user.getId(), user.getUserName());
+        return Response.success(userJoinResult);
     }
 
     //user 로그인
     public Map<String,String> login(UserLoginRequest userLoginRequest) {
         //유저 아이디 확인
         User user = userRepository.findByUserName(userLoginRequest.getUserName()).orElseThrow(
-                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%d는 없는 userName입니다",userLoginRequest.getUserName()))
+                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%s는 없는 userName입니다",userLoginRequest.getUserName()))
         );
 
         //유저 비밀번호 확인

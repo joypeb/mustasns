@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import java.util.Map;
 
 @RestController
@@ -30,14 +31,13 @@ public class UserController {
 
     //User 로그인
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity<String> login(@RequestBody UserLoginRequest userLoginRequest) {
         Map<String,String> tokenMap = userService.login(userLoginRequest);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("token", tokenMap.get("token"));
-        headers.add("refreshToken", tokenMap.get("refreshToken"));
+        headers.add("refreshToken",tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(UserLoginResponse.builder().jwt(tokenMap.get("token")).build());
+                .body(UserLoginResponse.builder().jwt(tokenMap.get("token")).build().getJwt());
     }
 }
