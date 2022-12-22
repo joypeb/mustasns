@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PostController.class)
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
+@MockBean(JpaMetamodelMappingContext.class)
 class PostControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -88,20 +90,7 @@ class PostControllerTest {
     @Test
     @DisplayName("포스트 리스트 성공")
     void post_list_s() {
-        //페이징 설정
-        Pageable pageRequest = PageRequest.of(0,20, Sort.by("registeredAt").descending());
-        List<Post> postList = new ArrayList<>();
-        //포스트 추가
-        postList.add(new Post(0,"user1","title1","body1", LocalDateTime.of(2022,11,21,19,20),null,null));
-        postList.add(new Post(1,"user2","title2","body2", LocalDateTime.of(2022,12,21,19,20),null,null));
-        //페이지 처리
-        PageImpl<Post> result = new PageImpl<>(postList, pageRequest, 2L);
-
-        List<Post> postList1 = result.toList();
-
-        for(Post x : postList1) {
-            System.out.println(x.getRegisteredAt());
-        }
+        //
     }
 
 
@@ -114,8 +103,6 @@ class PostControllerTest {
                 .title("")
                 .body("")
                 .userName("")
-                .createdAt(LocalDateTime.now())
-                .lastModifiedAt(LocalDateTime.now())
                 .build()));
 
         mockMvc.perform(get("/api/v1/posts/1")
@@ -128,8 +115,6 @@ class PostControllerTest {
                                         .title("")
                                         .body("")
                                         .userName("")
-                                        .createdAt(LocalDateTime.now())
-                                        .lastModifiedAt(LocalDateTime.now())
                                         .build()))))
                 .andDo(print())
                 .andExpect(status().isOk());
