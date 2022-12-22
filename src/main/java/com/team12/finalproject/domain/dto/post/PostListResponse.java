@@ -18,6 +18,7 @@ public class PostListResponse {
     private String body;
     private String userName;
     private LocalDateTime createdAt;
+    private LocalDateTime lastModifiedAt;
 
     public static PostListResponse entity(Post post) {
         return PostListResponse.builder()
@@ -26,6 +27,7 @@ public class PostListResponse {
                 .body(post.getBody())
                 .userName(post.getUser().getUserName())
                 .createdAt(post.getCreatedAt())
+                .lastModifiedAt(post.getLastModifiedAt())
                 .build();
     }
 }
