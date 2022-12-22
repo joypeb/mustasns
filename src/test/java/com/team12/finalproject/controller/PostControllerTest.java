@@ -1,9 +1,11 @@
 package com.team12.finalproject.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team12.finalproject.configuration.JwtTokenFilter;
 import com.team12.finalproject.domain.Post;
 import com.team12.finalproject.domain.dto.Response;
+import com.team12.finalproject.domain.dto.post.PostDetailResponse;
 import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.domain.dto.post.PostResult;
 import com.team12.finalproject.repository.PostRepository;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -99,5 +102,43 @@ class PostControllerTest {
         for(Post x : postList1) {
             System.out.println(x.getRegisteredAt());
         }
+    }
+
+
+    @Test
+    @DisplayName("포스트 상세조회")
+    @WithMockUser
+    void post_detail_s() throws Exception {
+        when(postService.detailedPost(1)).thenReturn(Response.success(PostDetailResponse.builder()
+                .id(1)
+                .title("")
+                .body("")
+                .userName("")
+                .createdAt(LocalDateTime.now())
+                .lastModifiedAt(LocalDateTime.now())
+                .build()));
+
+        mockMvc.perform(get("/api/v1/posts/1")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(
+                        new Response<PostDetailResponse>("",
+                                PostDetailResponse.builder()
+                                        .id(1)
+                                        .title("")
+                                        .body("")
+                                        .userName("")
+                                        .createdAt(LocalDateTime.now())
+                                        .lastModifiedAt(LocalDateTime.now())
+                                        .build()))))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        Response<PostDetailResponse> postDetailResult = postService.detailedPost(1);
+
+        Assertions.assertNotNull(postDetailResult.getResult().getId());
+        Assertions.assertNotNull(postDetailResult.getResult().getTitle());
+        Assertions.assertNotNull(postDetailResult.getResult().getBody());
+        Assertions.assertNotNull(postDetailResult.getResult().getUserName());
     }
 }
