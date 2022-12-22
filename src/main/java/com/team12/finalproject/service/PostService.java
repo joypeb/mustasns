@@ -70,6 +70,7 @@ public class PostService {
                 () -> new AppException(ErrorCode.POST_NOT_FOUND,"해당 포스트가 존재하지 않습니다")
         );
 
+        //postDetailResponse에 결과들을 가공해서 리턴한다
         PostDetailResponse postDetailResponse = PostDetailResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -80,5 +81,40 @@ public class PostService {
                 .build();
 
         return Response.success(postDetailResponse);
+    }
+
+    public Response<PostResult> modifyPost(int id, PostRequest postRequest, String userName) {
+        //기존의 포스트를 가져오면서 포스트를 확인한다
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.POST_NOT_FOUND,"포스트가 존재하지 않습니다")
+        );
+
+        //유저가 존재하는지 확인한다
+        userRepository.findByUserName(userName).orElseThrow(
+                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"유저가 존재하지 않습니다")
+        );
+
+        //db에 있던 포스트의 유저와 해당 유저의 이름을 비교한다
+        if(!userName.equals(post.getUser().getUserName())) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION,String.format("%s님의 포스트가 아닙니다",userName));
+        }
+
+        log.info("수정 내용 title " + postRequest.getTitle().equals(""));
+
+        //내용이 비어있지 않을 경우에만 값을 추가시킨다
+        if(!postRequest.getTitle().equals("") || !postRequest.getTitle().equals(null)) post.setTitle(postRequest.getTitle());
+        if(!postRequest.getBody().equals("") || !postRequest.getBody().equals(null)) post.setBody(postRequest.getBody());
+
+        //포스트를 수정한다
+        Post postModified = postRepository.save(post);
+
+        //만약 db로부터 아무것도 못받아오면 db에러를 발생시킨다
+        if(postModified == null) {
+            throw new AppException(ErrorCode.DATABASE_ERROR,"데이터베이스 에러입니다");
+        }
+
+        //postResult에 결과를 담아 리턴한다
+        PostResult postResult = new PostResult("포스트 수정 완료", postModified.getId());
+        return Response.success(postResult);
     }
 }

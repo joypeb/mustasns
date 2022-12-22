@@ -41,8 +41,8 @@ public class PostController {
 
     //포스트 수정
     @PutMapping("/{id}")
-    public void modifyPost(@PathVariable int id) {
-
+    public ResponseEntity<Response> modifyPost(@PathVariable int id, @RequestBody PostRequest postRequest, Authentication authentication) {
+        return ResponseEntity.ok().body(postService.modifyPost(id,postRequest,authentication.getName()));
     }
 
 }
