@@ -21,13 +21,28 @@ public class PostController {
 
     private final PostService postService;
 
+    //포스트 목록
     @GetMapping
     public ResponseEntity<Page> postList(@PageableDefault(size = 20, sort = "registeredAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok().body(postService.postList(pageable));
     }
 
+    //포스트 작성
     @PostMapping
     public ResponseEntity<Response> writePost(@RequestBody PostRequest postRequest, Authentication authentication) {
         return ResponseEntity.ok().body(postService.writePost(postRequest,authentication.getName()));
     }
+
+    //포스트 상세
+    @GetMapping("/{id}")
+    public ResponseEntity<Response> detailedPost(@PathVariable int id) {
+        return ResponseEntity.ok().body(postService.detailedPost(id));
+    }
+
+    //포스트 수정
+    @PutMapping("/{id}")
+    public void modifyPost(@PathVariable int id) {
+
+    }
+
 }

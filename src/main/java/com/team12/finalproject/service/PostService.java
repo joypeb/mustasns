@@ -2,6 +2,7 @@ package com.team12.finalproject.service;
 
 import com.team12.finalproject.domain.Post;
 import com.team12.finalproject.domain.dto.Response;
+import com.team12.finalproject.domain.dto.post.PostDetailResponse;
 import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.domain.dto.post.PostResult;
 import com.team12.finalproject.exception.AppException;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -59,5 +61,22 @@ public class PostService {
     }
 
 
+    public Response<PostDetailResponse> detailedPost(int id) {
 
+        //id에 대한 글을 꺼내옴
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.POST_NOT_FOUND,"해당 포스트가 존재하지 않습니다")
+        );
+
+        PostDetailResponse postDetailResponse = PostDetailResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .body(post.getBody())
+                .userName(post.getUserName())
+                .createdAt(post.getRegisteredAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .lastModifiedAt(post.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .build();
+
+        return Response.success(postDetailResponse);
+    }
 }
