@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class User {
+public class User extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +21,6 @@ public class User {
     private String password;
     private String refreshToken;
     private LocalDateTime deletedAt;
-    private LocalDateTime registeredAt;
-    private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
