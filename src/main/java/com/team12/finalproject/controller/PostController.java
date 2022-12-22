@@ -23,7 +23,7 @@ public class PostController {
 
     //포스트 목록
     @GetMapping
-    public ResponseEntity<Page> postList(@PageableDefault(size = 20, sort = "registeredAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<Page> postList(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok().body(postService.postList(pageable));
     }
 
