@@ -10,5 +10,16 @@ import lombok.*;
 @NoArgsConstructor
 public class ExceptionResult {
     private ErrorCode errorCode;
+    private int errorCodeInt;
     private String message;
+
+    public ExceptionResult(int errorCodeInt, String message) {
+        this.errorCodeInt = errorCodeInt;
+        this.message = message;
+    }
+
+    public ExceptionResult(ErrorCode errorCode, String message) {
+        this.errorCode = errorCode;
+        this.message = message;
+    }
 }
