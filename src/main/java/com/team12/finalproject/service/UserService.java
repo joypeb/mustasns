@@ -7,6 +7,7 @@ import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
 import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginResponse;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.repository.UserRepository;
@@ -54,7 +55,7 @@ public class UserService {
     }
 
     //user 로그인
-    public Map<String,String> login(UserLoginRequest userLoginRequest) {
+    public Response<UserLoginResponse> login(UserLoginRequest userLoginRequest) {
         //유저 아이디 확인
         User user = userRepository.findByUserName(userLoginRequest.getUserName()).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%s는 없는 userName입니다",userLoginRequest.getUserName()))
@@ -66,15 +67,18 @@ public class UserService {
 
         //jwt발행
         String token = JwtTokenUtils.createToken(user.getUserName(),secretKey,expireTimems);
-        String refreshToken = JwtTokenUtils.createRefreshToken(user.getUserName(),secretKey,refreshExpireTimems);
+        //String refreshToken = JwtTokenUtils.createRefreshToken(user.getUserName(),secretKey,refreshExpireTimems);
 
         //refreshToken을 db에 저장
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
+        /*user.setRefreshToken(refreshToken);
+        userRepository.save(user);*/
 
-        Map<String,String> tokenMap = new HashMap<>();
+        /*Map<String,String> tokenMap = new HashMap<>();
         tokenMap.put("token",token);
-        tokenMap.put("refreshToken",refreshToken);
-        return tokenMap;
+        tokenMap.put("refreshToken",refreshToken);*/
+
+        UserLoginResponse userLoginResponse = new UserLoginResponse(token);
+
+        return Response.success(userLoginResponse);
     }
 }

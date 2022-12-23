@@ -31,13 +31,12 @@ public class UserController {
 
     //User 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginRequest userLoginRequest) {
-        Map<String,String> tokenMap = userService.login(userLoginRequest);
+    public ResponseEntity<Response> login(@RequestBody UserLoginRequest userLoginRequest) {
+        //Map<String,String> tokenMap = userService.login(userLoginRequest);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("refreshToken",tokenMap.get("refreshToken"));
+        //HttpHeaders headers = new HttpHeaders();
+        //headers.add("refreshToken",tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
-                .headers(headers)
-                .body(UserLoginResponse.builder().jwt(tokenMap.get("token")).build().getJwt());
+                .body(userService.login(userLoginRequest));
     }
 }
