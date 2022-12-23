@@ -79,8 +79,7 @@ class UserControllerTest {
     @DisplayName("로그인 성공")
     @WithMockUser
     void login_s() throws Exception {
-        Map<String,String> map = new HashMap<>();
-        when(userService.login(new UserLoginRequest("user1","1234"))).thenReturn(map);
+        when(userService.login(new UserLoginRequest("user1","1234"))).thenReturn(new Response<>());
 
         mockMvc.perform(post("/api/v1/users/login")
                 .with(csrf())
