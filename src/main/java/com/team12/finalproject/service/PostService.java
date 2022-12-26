@@ -83,7 +83,7 @@ public class PostService {
         return Response.success(postDetailResponse);
     }
 
-    public Response<PostResult> modifyPost(int id, PostRequest postRequest, String userName) {
+    public PostResult modifyPost(int id, String title, String body, String userName) {
         //기존의 포스트를 가져오면서 포스트를 확인한다
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.POST_NOT_FOUND,"포스트가 존재하지 않습니다")
@@ -99,11 +99,9 @@ public class PostService {
             throw new AppException(ErrorCode.INVALID_PERMISSION,String.format("%s님의 포스트가 아닙니다",userName));
         }
 
-        log.info("수정 내용 title " + postRequest.getTitle().equals(""));
-
         //내용이 비어있지 않을 경우에만 값을 추가시킨다
-        if(!postRequest.getTitle().equals("") || !postRequest.getTitle().equals(null)) post.setTitle(postRequest.getTitle());
-        if(!postRequest.getBody().equals("") || !postRequest.getBody().equals(null)) post.setBody(postRequest.getBody());
+        if(!title.equals("") || !title.equals(null)) post.setTitle(title);
+        if(!body.equals("") || !body.equals(null)) post.setBody(body);
 
         //포스트를 수정한다
         Post postModified = postRepository.save(post);
@@ -114,7 +112,35 @@ public class PostService {
         }
 
         //postResult에 결과를 담아 리턴한다
-        PostResult postResult = new PostResult("포스트 수정 완료", postModified.getId());
-        return Response.success(postResult);
+        return new PostResult("포스트 수정 완료", postModified.getId());
+    }
+
+    public PostResult deletePost(int id, String userName) {
+
+        //해당 아이디의 포스트가 존재하는지 확인
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.POST_NOT_FOUND,"포스트를 찾을 수 없습니다")
+        );
+
+        //userName이 존재하는지 확인
+        userRepository.findByUserName(userName).orElseThrow(
+                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"userName을 찾을 수 없습니다")
+        );
+
+        //해당 포스트의 userNamer과 요청된 userName이 일치하는지 확인
+        if(!post.getUser().getUserName().equals(userName)) throw new AppException(ErrorCode.INVALID_PERMISSION,"userName이 같지 않습니다");
+        if(post.getUser().getUserName().equals("") || post.getUser().getUserName().equals(null)) {
+            throw new AppException(ErrorCode.USERNAME_NOT_FOUND,"해당 포스트에 userName이 존재하지 않습니다");
+        }
+
+        //delete실행
+        postRepository.deleteById(id);
+
+        //delete 삭제 확인
+        postRepository.findById(id).ifPresent(
+                (post1 -> new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다"))
+        );
+
+        return new PostResult("포스트 삭제 완료",id);
     }
 }

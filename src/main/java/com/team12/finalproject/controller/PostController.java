@@ -2,6 +2,7 @@ package com.team12.finalproject.controller;
 
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostRequest;
+import com.team12.finalproject.domain.dto.post.PostResult;
 import com.team12.finalproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,7 @@ public class PostController {
 
     //포스트 목록
     @GetMapping
-    public ResponseEntity<Page> postList(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<Page> postList(@PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok().body(postService.postList(pageable));
     }
 
@@ -42,7 +44,14 @@ public class PostController {
     //포스트 수정
     @PutMapping("/{id}")
     public ResponseEntity<Response> modifyPost(@PathVariable int id, @RequestBody PostRequest postRequest, Authentication authentication) {
-        return ResponseEntity.ok().body(postService.modifyPost(id,postRequest,authentication.getName()));
+        Response<PostResult> response = Response.success(postService.modifyPost(id,postRequest.getTitle(),postRequest.getBody(),authentication.getName()));
+        return ResponseEntity.ok().body(response);
     }
 
+    //포스트 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response> deletePost(@PathVariable int id,Authentication authentication) {
+        Response<PostResult> response = Response.success(postService.deletePost(id,authentication.getName()));
+        return ResponseEntity.ok().body(response);
+    }
 }
