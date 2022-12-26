@@ -1,6 +1,7 @@
 package com.team12.finalproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostDetailResponse;
 import com.team12.finalproject.domain.dto.post.PostRequest;

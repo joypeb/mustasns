@@ -2,7 +2,10 @@ package com.team12.finalproject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.domain.dto.Response;
+import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeRequest;
+import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
@@ -119,5 +122,41 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsBytes(new UserLoginRequest("user1","1234"))))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    @DisplayName("admin 권한 변경 성공")
+    @WithMockUser(roles = "ROLE_ADMIN")
+    void admin_change_s() throws Exception{
+        AdminRoleChangeResponse adminRoleChangeResponse = new AdminRoleChangeResponse("",0);
+
+        when(userService.roleChange(0, UserRole.ADMIN))
+                .thenReturn(Response.success(adminRoleChangeResponse));
+
+        mockMvc.perform(post("/api/v1/users/1/role/change")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(new AdminRoleChangeRequest(UserRole.USER))))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    @DisplayName("admin 권한 변경 실패 - 권한이 user임")
+    @WithMockUser(roles = "USER")
+    void admin_change_f1() throws Exception{
+        AdminRoleChangeResponse adminRoleChangeResponse = new AdminRoleChangeResponse("",0);
+
+        when(userService.roleChange(0, UserRole.ADMIN))
+                .thenReturn(Response.success(adminRoleChangeResponse));
+
+        mockMvc.perform(post("/api/v1/users/1/role/change")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new AdminRoleChangeRequest(UserRole.USER))))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }
