@@ -67,7 +67,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         User user = userRepository.findByUserName(userName).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"유저를 찾을 수 없습니다")
         );
-        String userRole = String.valueOf(user.getRole());
+        String userRole = String.format("ROLE_%S",String.valueOf(user.getRole()));
 
         //인증 완료
         UsernamePasswordAuthenticationToken authenticationToken =
