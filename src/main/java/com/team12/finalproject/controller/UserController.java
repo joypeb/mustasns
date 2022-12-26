@@ -1,6 +1,7 @@
 package com.team12.finalproject.controller;
 
 import com.team12.finalproject.domain.dto.Response;
+import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
@@ -38,5 +39,11 @@ public class UserController {
         //headers.add("refreshToken",tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
                 .body(userService.login(userLoginRequest));
+    }
+
+    @PostMapping("/{id}/role/change")
+    public ResponseEntity<?> roleChange(@PathVariable Integer id, @RequestBody AdminRoleChangeRequest adminRoleChangeRequest) {
+        return ResponseEntity.ok()
+                .body(userService.roleChange(id, adminRoleChangeRequest.getRole()));
     }
 }

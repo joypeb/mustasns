@@ -3,6 +3,7 @@ package com.team12.finalproject.service;
 import com.team12.finalproject.domain.User;
 import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.domain.dto.Response;
+import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
@@ -80,5 +81,23 @@ public class UserService {
         UserLoginResponse userLoginResponse = new UserLoginResponse(token);
 
         return Response.success(userLoginResponse);
+    }
+
+    public Response<AdminRoleChangeResponse> roleChange(Integer id, UserRole role) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%d는 없는 id입니다",id))
+        );
+
+        user.setRole(role);
+        User changeRoleUser = userRepository.save(user);
+
+        if(changeRoleUser.getUserName().equals("") || changeRoleUser.getUserName().equals(null)) {
+            throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
+        }
+
+        AdminRoleChangeResponse adminRoleChangeResponse =
+                new AdminRoleChangeResponse(String.format("userRole이 %s로 변경되었습니다", String.valueOf(changeRoleUser.getRole())), changeRoleUser.getId());
+
+        return Response.success(adminRoleChangeResponse);
     }
 }

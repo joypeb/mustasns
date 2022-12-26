@@ -1,5 +1,6 @@
 package com.team12.finalproject.controller;
 
+import com.team12.finalproject.domain.User;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.domain.dto.post.PostResult;
@@ -13,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,13 +46,13 @@ public class PostController {
     //포스트 수정
     @PutMapping("/{id}")
     public ResponseEntity<Response> modifyPost(@PathVariable int id, @RequestBody PostRequest postRequest, Authentication authentication) {
-        Response<PostResult> response = Response.success(postService.modifyPost(id,postRequest.getTitle(),postRequest.getBody(),authentication.getName()));
+        Response<PostResult> response = Response.success(postService.modifyPost(id,postRequest.getTitle(),postRequest.getBody(), authentication.getName()));
         return ResponseEntity.ok().body(response);
     }
 
     //포스트 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> deletePost(@PathVariable int id,Authentication authentication) {
+    public ResponseEntity<Response> deletePost(@PathVariable int id, Authentication authentication) {
         Response<PostResult> response = Response.success(postService.deletePost(id,authentication.getName()));
         return ResponseEntity.ok().body(response);
     }

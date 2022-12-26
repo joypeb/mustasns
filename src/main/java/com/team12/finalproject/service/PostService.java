@@ -2,6 +2,7 @@ package com.team12.finalproject.service;
 
 import com.team12.finalproject.domain.Post;
 import com.team12.finalproject.domain.User;
+import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostDetailResponse;
 import com.team12.finalproject.domain.dto.post.PostListResponse;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,13 +90,16 @@ public class PostService {
         );
 
         //유저가 존재하는지 확인한다
-        userRepository.findByUserName(userName).orElseThrow(
+        User user = userRepository.findByUserName(userName).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"유저가 존재하지 않습니다")
         );
 
         //db에 있던 포스트의 유저와 해당 유저의 이름을 비교한다
-        if(!userName.equals(post.getUser().getUserName())) {
-            throw new AppException(ErrorCode.INVALID_PERMISSION,String.format("%s님의 포스트가 아닙니다",userName));
+        //admin일경우 스킵한다
+        if(UserRole.USER.equals(user.getRole())) {
+            if (!userName.equals(post.getUser().getUserName())) {
+                throw new AppException(ErrorCode.INVALID_PERMISSION, String.format("%s님의 포스트가 아닙니다", userName));
+            }
         }
 
         //내용이 비어있지 않을 경우에만 값을 추가시킨다
@@ -123,14 +126,18 @@ public class PostService {
         );
 
         //userName이 존재하는지 확인
-        userRepository.findByUserName(userName).orElseThrow(
+        User user = userRepository.findByUserName(userName).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"userName을 찾을 수 없습니다")
         );
 
         //해당 포스트의 userNamer과 요청된 userName이 일치하는지 확인
-        if(!post.getUser().getUserName().equals(userName)) throw new AppException(ErrorCode.INVALID_PERMISSION,"userName이 같지 않습니다");
-        if(post.getUser().getUserName().equals("") || post.getUser().getUserName().equals(null)) {
-            throw new AppException(ErrorCode.USERNAME_NOT_FOUND,"해당 포스트에 userName이 존재하지 않습니다");
+        //admin일경우 스킵
+        if(UserRole.USER.equals(user.getRole())) {
+            if (!post.getUser().getUserName().equals(userName))
+                throw new AppException(ErrorCode.INVALID_PERMISSION, "userName이 같지 않습니다");
+            if (post.getUser().getUserName().equals("") || post.getUser().getUserName().equals(null)) {
+                throw new AppException(ErrorCode.USERNAME_NOT_FOUND, "해당 포스트에 userName이 존재하지 않습니다");
+            }
         }
 
         //delete실행
