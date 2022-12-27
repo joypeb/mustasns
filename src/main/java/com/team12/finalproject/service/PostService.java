@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
@@ -33,11 +34,13 @@ public class PostService {
 
 
     //포스트 리스트
+    @Transactional
     public Page<PostListResponse> postList(Pageable pageable) {
         return new PageImpl<>(postRepository.findAll(pageable).stream().map(post -> PostListResponse.entity(post)).collect(Collectors.toList()));
     }
 
     //포스트 작성
+    @Transactional
     public Response<PostResult> writePost(PostRequest postRequest, String userName) {
 
         //userName이 존재하는지 확인
@@ -63,6 +66,8 @@ public class PostService {
     }
 
 
+    //포스트 상세
+    @Transactional
     public Response<PostDetailResponse> detailedPost(int id) {
 
         //id에 대한 글을 꺼내옴
@@ -83,6 +88,8 @@ public class PostService {
         return Response.success(postDetailResponse);
     }
 
+    //포스트 수정
+    @Transactional
     public PostResult modifyPost(int id, String title, String body, String userName) {
         //기존의 포스트를 가져오면서 포스트를 확인한다
         Post post = postRepository.findById(id).orElseThrow(
@@ -118,6 +125,8 @@ public class PostService {
         return new PostResult("포스트 수정 완료", postModified.getId());
     }
 
+    //포스트 삭제
+    @Transactional
     public PostResult deletePost(int id, String userName) {
 
         //해당 아이디의 포스트가 존재하는지 확인

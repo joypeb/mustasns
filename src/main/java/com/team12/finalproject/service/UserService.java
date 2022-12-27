@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class UserService {
     private long refreshExpireTimems = 60 * 60 * 10000;
 
     //user 회원가입
+    @Transactional
     public Response<UserJoinResult> join(UserJoinRequest userJoinRequest) {
 
         //user중복 체크
@@ -56,6 +58,7 @@ public class UserService {
     }
 
     //user 로그인
+    @Transactional
     public Response<UserLoginResponse> login(UserLoginRequest userLoginRequest) {
         //유저 아이디 확인
         User user = userRepository.findByUserName(userLoginRequest.getUserName()).orElseThrow(
@@ -83,6 +86,8 @@ public class UserService {
         return Response.success(userLoginResponse);
     }
 
+    //권한 변경
+    @Transactional
     public Response<AdminRoleChangeResponse> roleChange(Integer id, UserRole role) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%d는 없는 id입니다",id))
