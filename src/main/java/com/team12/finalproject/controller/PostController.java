@@ -28,6 +28,7 @@ public class PostController {
     //포스트 목록
     @GetMapping
     public ResponseEntity<Page> postList(@PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        log.info("통과");
         return ResponseEntity.ok().body(postService.postList(pageable));
     }
 

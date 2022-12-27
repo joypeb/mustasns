@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -34,7 +36,6 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Response> login(@RequestBody UserLoginRequest userLoginRequest) {
         //Map<String,String> tokenMap = userService.login(userLoginRequest);
-
         //HttpHeaders headers = new HttpHeaders();
         //headers.add("refreshToken",tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
