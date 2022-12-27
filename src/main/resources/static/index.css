@@ -1,0 +1,34 @@
+.out-box {
+    margin-top: 60px;
+    max-width: 1000px;
+}
+.header-box {
+    padding: 10px 20px;
+}
+.title-box {
+    margin: 50px 20px 10px 20px;
+    text-align: center;
+}
+.list-box {
+    margin: 0 20px 50px 20px;
+}
+
+
+@media screen and (max-width:767px) {
+    .out-box {
+        margin-top: 0px;
+    }
+    .login-box {
+        display: flex;
+        justify-content: end;
+    }
+    .header-box {
+        padding: 10px;
+    }
+    .title-box {
+        margin: 30px 10px 10px 10px;
+    }
+    .list-box {
+        margin: 0 10px 50px 10px;
+    }
+}
