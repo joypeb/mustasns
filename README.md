@@ -22,6 +22,12 @@
 - JPA를 이용해 쿼리를 작성했습니다
 - gitlab과 aws-ec2의 ubuntu, docker를 이용해 gitlab의 메인 브랜치에 push를 할 경우 자동으로 ci/cd를 하는 로직을 작성했습니다
 
+## 기능 개발시 고려사항
+- RESTful한 프로젝트가 되도록 고려했습니다
+- 테스트 작성을위해 DB를 거치지 않고 가짜 객체를 만들어 테스트하는 방법을 spring공식문서와 spring-boot공식문서를보고 확인했습니다
+- 클라이언트가 데이터를 요청하고 서버가 데이터를 응답할때 에러가 발생하지 않도록 꼼꼼한 예외처리를 고려했습니다
+- 배포하는데 들어가는 시간을 줄이기 위해 자동으로 gitlab에서 빌드를 하고 개인 docker-repository로 push하고 aws-ecs의 ubuntu에서 crontab을 이용해 수시로 docker-repository가 업데이트되었는지 확인해 지속적인 제공을 해주었습니다
+
 ## EndPoint
 
 - 회원가입
