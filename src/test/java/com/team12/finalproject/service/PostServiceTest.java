@@ -42,9 +42,12 @@ class PostServiceTest {
     PostRepository postRepository = Mockito.mock(PostRepository.class);
     UserRepository userRepository = Mockito.mock(UserRepository.class);
 
+    FindUser findUser;
+
     @BeforeEach
     void before() {
-        postService = new PostService(postRepository,userRepository);
+        findUser = new FindUser(userRepository);
+        postService = new PostService(postRepository,userRepository,findUser);
     }
 
     @Test
@@ -61,7 +64,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertDoesNotThrow(() -> postService.writePost(postRequest, postFixture.getUser().getUserName()));
+        Assertions.assertDoesNotThrow(() -> postService.writePost(postFixture.getTitle(),postFixture.getBody(), postFixture.getUser().getUserName()));
     }
 
     @Test
@@ -78,7 +81,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.writePost(postRequest, postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.writePost(postFixture.getTitle(),postFixture.getBody(), postFixture.getUser().getUserName()));
     }
 
     @Test
@@ -95,7 +98,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenThrow(new AppException(ErrorCode.DATABASE_ERROR,"데이터베이스 오류입니다"));
 
-        Assertions.assertThrows(AppException.class,() -> postService.writePost(postRequest, postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.writePost(postFixture.getTitle(),postFixture.getBody(), postFixture.getUser().getUserName()));
     }
 
 

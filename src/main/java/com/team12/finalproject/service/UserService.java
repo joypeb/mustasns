@@ -4,10 +4,7 @@ import com.team12.finalproject.domain.User;
 import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeResponse;
-import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
-import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
-import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
 import com.team12.finalproject.domain.dto.userLogin.UserLoginResponse;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
@@ -20,8 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.team12.finalproject.domain.dto.userJoin.UserJoinRequest.toEntity;
 
@@ -32,6 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final FindUser findUser;
 
     @Value("${jwt.token.secret}")
     private String secretKey;
@@ -40,16 +37,17 @@ public class UserService {
 
     //user 회원가입
     @Transactional
-    public Response<UserJoinResult> join(UserJoinRequest userJoinRequest) {
+    public Response<UserJoinResult> join(String userName, String password) {
 
         //user중복 체크
-        userRepository.findByUserName(userJoinRequest.getUserName())
+        userRepository.findByUserName(userName)
                 .ifPresent(user -> {
                     throw new AppException(ErrorCode.DUPLICATED_USER_NAME, "UserName이 중복됩니다");
                 });
 
+
         //user를 db에 저장
-        User user = userRepository.save(toEntity(userJoinRequest, encoder.encode(userJoinRequest.getPassword()),UserRole.USER));
+        User user = userRepository.save(toEntity(userName, encoder.encode(password),UserRole.USER));
         if(user.getId() < 1) throw new AppException(ErrorCode.DATABASE_ERROR, "데이터베이스 에러 발생");
 
         //response 작성
@@ -59,14 +57,12 @@ public class UserService {
 
     //user 로그인
     @Transactional
-    public Response<UserLoginResponse> login(UserLoginRequest userLoginRequest) {
+    public Response<UserLoginResponse> login(String userName, String password) {
         //유저 아이디 확인
-        User user = userRepository.findByUserName(userLoginRequest.getUserName()).orElseThrow(
-                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%s는 없는 userName입니다",userLoginRequest.getUserName()))
-        );
+        User user = findUser.findUserByUserName(userName);
 
         //유저 비밀번호 확인
-        boolean passwordMatch = encoder.matches(userLoginRequest.getPassword(), user.getPassword());
+        boolean passwordMatch = encoder.matches(password, user.getPassword());
         if(!passwordMatch) throw new AppException(ErrorCode.INVALID_PASSWORD,"패스워드가 틀립니다");
 
         //jwt발행
@@ -88,14 +84,23 @@ public class UserService {
 
     //권한 변경
     @Transactional
-    public Response<AdminRoleChangeResponse> roleChange(Integer id, UserRole role) {
+    public Response<AdminRoleChangeResponse> roleChange(Integer id, String role) {
+        //user가 존재하는지 확인
         User user = userRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%d는 없는 id입니다",id))
         );
 
-        user.setRole(role);
+        //userRole이 정확히 들어왔는지 확인
+        String userRole = role.toUpperCase();
+        if(!userRole.equals("USER") && !userRole.equals("ADMIN")) {
+            throw new AppException(ErrorCode.INVALID_USERROLE,"userRole이 잘못되었습니다");
+        }
+
+        //userRole을 변경한다
+        user.setRole(UserRole.valueOf(userRole));
         User changeRoleUser = userRepository.save(user);
 
+        //db에 저장이 잘 되었는지 확인한다
         if(changeRoleUser.getUserName().equals("") || changeRoleUser.getUserName().equals(null)) {
             throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
         }
@@ -105,4 +110,5 @@ public class UserService {
 
         return Response.success(adminRoleChangeResponse);
     }
+
 }

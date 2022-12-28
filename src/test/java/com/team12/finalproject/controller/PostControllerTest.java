@@ -27,6 +27,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -53,7 +54,7 @@ class PostControllerTest {
     @DisplayName("포스트 작성 성공")
     @WithMockUser
     void write_post_s() throws Exception {
-        when(postService.writePost(any(),any())).thenReturn(Response.<PostResult>builder().build());
+        when(postService.writePost("","","")).thenReturn(Response.<PostResult>builder().build());
 
         mockMvc.perform(post("/api/v1/posts")
                 .with(csrf())
@@ -164,7 +165,7 @@ class PostControllerTest {
         mockMvc.perform(put("/api/v1/posts/1")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(postRequest)))
+                .content(objectMapper.writeValueAsBytes(new PostRequest("",""))))
                 .andDo(print())
                 .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getHttpStatus().value()));
     }

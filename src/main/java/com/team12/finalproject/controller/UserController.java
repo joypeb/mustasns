@@ -3,20 +3,12 @@ package com.team12.finalproject.controller;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
-import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
 import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
-import com.team12.finalproject.domain.dto.userLogin.UserLoginResponse;
 import com.team12.finalproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.Cookie;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -29,7 +21,8 @@ public class UserController {
     //User 회원가입
     @PostMapping("/join")
     public ResponseEntity<Response> join(@RequestBody UserJoinRequest userJoinRequest) {
-        return ResponseEntity.ok().body(userService.join(userJoinRequest));
+        return ResponseEntity.ok()
+                .body(userService.join(userJoinRequest.getUserName(), userJoinRequest.getPassword()));
     }
 
     //User 로그인
@@ -39,7 +32,7 @@ public class UserController {
         //HttpHeaders headers = new HttpHeaders();
         //headers.add("refreshToken",tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
-                .body(userService.login(userLoginRequest));
+                .body(userService.login(userLoginRequest.getUserName(), userLoginRequest.getPassword()));
     }
 
     @PostMapping("/{id}/role/change")

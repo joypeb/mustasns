@@ -30,6 +30,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final FindUser findUser;
 
 
 
@@ -41,19 +42,17 @@ public class PostService {
 
     //포스트 작성
     @Transactional
-    public Response<PostResult> writePost(PostRequest postRequest, String userName) {
+    public Response<PostResult> writePost(String title,String body, String userName) {
 
         //userName이 존재하는지 확인
-        User user = userRepository.findByUserName(userName).orElseThrow(
-                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,String.format("%s이(가) 존재하지 않습니다",userName))
-        );
+        User user = findUser.findUserByUserName(userName);
 
         //post를 db에 저장
         Post post = postRepository.save(
                 Post.builder()
                         .user(user)
-                        .title(postRequest.getTitle())
-                        .body(postRequest.getBody())
+                        .title(title)
+                        .body(body)
                         .build()
         );
 
@@ -97,9 +96,7 @@ public class PostService {
         );
 
         //유저가 존재하는지 확인한다
-        User user = userRepository.findByUserName(userName).orElseThrow(
-                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"유저가 존재하지 않습니다")
-        );
+        User user = findUser.findUserByUserName(userName);
 
         //db에 있던 포스트의 유저와 해당 유저의 이름을 비교한다
         //admin일경우 스킵한다
@@ -110,8 +107,8 @@ public class PostService {
         }
 
         //내용이 비어있지 않을 경우에만 값을 추가시킨다
-        if(!title.equals("") || !title.equals(null)) post.setTitle(title);
-        if(!body.equals("") || !body.equals(null)) post.setBody(body);
+        if(!title.equals("") && !title.equals(null)) post.setTitle(title);
+        if(!body.equals("") && !body.equals(null)) post.setBody(body);
 
         //포스트를 수정한다
         Post postModified = postRepository.save(post);
@@ -135,9 +132,7 @@ public class PostService {
         );
 
         //userName이 존재하는지 확인
-        User user = userRepository.findByUserName(userName).orElseThrow(
-                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"userName을 찾을 수 없습니다")
-        );
+        User user = findUser.findUserByUserName(userName);
 
         //해당 포스트의 userNamer과 요청된 userName이 일치하는지 확인
         //admin일경우 스킵

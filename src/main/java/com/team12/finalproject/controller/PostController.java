@@ -1,6 +1,5 @@
 package com.team12.finalproject.controller;
 
-import com.team12.finalproject.domain.User;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.domain.dto.post.PostResult;
@@ -14,7 +13,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,7 +33,7 @@ public class PostController {
     //포스트 작성
     @PostMapping
     public ResponseEntity<Response> writePost(@RequestBody PostRequest postRequest, Authentication authentication) {
-        return ResponseEntity.ok().body(postService.writePost(postRequest,authentication.getName()));
+        return ResponseEntity.ok().body(postService.writePost(postRequest.getTitle(),postRequest.getBody(),authentication.getName()));
     }
 
     //포스트 상세
