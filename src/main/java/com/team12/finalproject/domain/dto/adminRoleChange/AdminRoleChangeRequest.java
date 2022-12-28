@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminRoleChangeRequest {
-    private UserRole role;
+    private String role;
 }
