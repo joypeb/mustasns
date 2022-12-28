@@ -1,7 +1,6 @@
 package com.team12.finalproject.configuration;
 
-import com.team12.finalproject.repository.UserRepository;
-import com.team12.finalproject.service.UserService;
+import com.team12.finalproject.service.FindUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -18,8 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserService userService;
-    private final UserRepository userRepository;
+    private final FindUser findUser;
     @Value("${jwt.token.secret}")
     private String secretKey;
 
@@ -40,7 +39,8 @@ public class SecurityConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
                 .and()
-                .addFilterBefore(new JwtTokenFilter(userService, userRepository, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(findUser, secretKey), UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(new JwtTokenFilterException(), JwtTokenFilter.class)
                 .build();
     }
 }

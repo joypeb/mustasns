@@ -1,13 +1,10 @@
 package com.team12.finalproject.configuration;
 
 import com.team12.finalproject.domain.User;
-import com.team12.finalproject.domain.UserRole;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
-import com.team12.finalproject.repository.UserRepository;
-import com.team12.finalproject.service.UserService;
+import com.team12.finalproject.service.FindUser;
 import com.team12.finalproject.utils.JwtTokenUtils;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -28,8 +25,7 @@ import java.util.List;
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
-    private final UserRepository userRepository;
+    private final FindUser findUser;
     private final String secretKey;
 
     @Override
@@ -64,9 +60,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String userName = JwtTokenUtils.getUserNAme(token,secretKey);
 
         //Role확인
-        User user = userRepository.findByUserName(userName).orElseThrow(
-                () -> new AppException(ErrorCode.USERNAME_NOT_FOUND,"유저를 찾을 수 없습니다")
-        );
+        User user = findUser.findUserByUserName(userName);
         String userRole = String.format("ROLE_%S",String.valueOf(user.getRole()));
 
         //인증 완료
