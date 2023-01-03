@@ -1,4 +1,4 @@
-package com.team12.finalproject.domain;
+package com.team12.finalproject.domain.entity;
 
 import lombok.Getter;
 import lombok.Setter;
