@@ -10,15 +10,15 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentWriteResponse {
+public class CommentResponse {
     private int id;
     private String comment;
     private String userName;
     private int postId;
     private LocalDateTime createdAt;
 
-    public static CommentWriteResponse response(Comment comment) {
-        return CommentWriteResponse.builder()
+    public static CommentResponse response(Comment comment) {
+        return CommentResponse.builder()
                 .id(comment.getId())
                 .comment(comment.getComment())
                 .userName(comment.getUser().getUserName())
