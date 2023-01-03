@@ -1,10 +1,10 @@
 package com.team12.finalproject.configuration;
 
-import com.team12.finalproject.domain.User;
-import com.team12.finalproject.exception.AppException;
-import com.team12.finalproject.exception.ErrorCode;
-import com.team12.finalproject.service.FindUser;
+import com.team12.finalproject.domain.entity.User;
+import com.team12.finalproject.service.VerificationService;
 import com.team12.finalproject.utils.JwtTokenUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +25,6 @@ import java.util.List;
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final FindUser findUser;
     private final String secretKey;
 
     @Override
@@ -42,30 +41,28 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         //token 꺼내기 Bearer를 제거해준다
         String token = "";
+        Claims claims = null;
         try {
             token = authorizationHeader.split(" ")[1];
-        } catch (Exception e) {
+            claims = JwtTokenUtils.extractClaims(token,secretKey);
+        } catch (JwtException e) {
             filterChain.doFilter(request,response);
-            throw new AppException(ErrorCode.INVALID_TOKEN,"토큰추출에 실패하였습니다");
         }
 
         //token이 expired(만료)되었는지 여부
-        if(JwtTokenUtils.isExpired(token,secretKey)) {
+        if(JwtTokenUtils.isExpired(claims,secretKey)) {
             filterChain.doFilter(request,response);
-            throw new AppException(ErrorCode.INVALID_TOKEN,"토큰이 만료되었습니다");
         }
 
-
         //userName 꺼내기
-        String userName = JwtTokenUtils.getUserNAme(token,secretKey);
+        String userName = claims.get("userName").toString();
 
         //Role확인
-        User user = findUser.findUserByUserName(userName);
-        String userRole = String.format("ROLE_%S",String.valueOf(user.getRole()));
+        String userRole = String.format("ROLE_%s",claims.get("role").toString());
 
         //인증 완료
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userName, null, List.of(new SimpleGrantedAuthority(userRole))
+                new UsernamePasswordAuthenticationToken(new User(claims), null, List.of(new SimpleGrantedAuthority(userRole))
         );
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
