@@ -1,13 +1,17 @@
 package com.team12.finalproject.service;
 
+import com.team12.finalproject.domain.entity.Comment;
 import com.team12.finalproject.domain.entity.Post;
 import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
+import com.team12.finalproject.repository.CommentRepository;
 import com.team12.finalproject.repository.PostRepository;
 import com.team12.finalproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -15,6 +19,7 @@ public class VerificationService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     //userName으로 user찾기
     public User findUserByUserName(String userName) {
@@ -36,19 +41,34 @@ public class VerificationService {
 
     //post id로 post찾기
     public Post findPostById(int id) {
-        return postRepository.findById(id)
+        Post post =  postRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND,"해당 포스트가 존재하지 않습니다"));
+        if(post.getDeletedAt() != null)
+            throw new AppException(ErrorCode.POST_NOT_FOUND,"해당 포스트가 존재하지 않습니다");
+        return post;
+    }
+
+    //post의 deletedAt이 null인지 확인
+    public void checkDeleted(LocalDateTime deletedAt) {
+        if(deletedAt != null)
+            throw new AppException(ErrorCode.POST_NOT_FOUND,"해당 포스트가 존재하지 않습니다");
     }
 
     //post를 작성한 userName과 현재 userName을 비교
-    public void checkSameUserName(String postUserName, String userName) {
-        if(!postUserName.equals(userName))
-            throw new AppException(ErrorCode.INVALID_PERMISSION, String.format("%s님의 포스트가 아닙니다", userName));
+    public void checkSameUserName(String authUserName, String userName, String content) {
+        if(!authUserName.equals(userName))
+            throw new AppException(ErrorCode.INVALID_PERMISSION, String.format("%s님의 %s이(가) 아닙니다", userName,content));
     }
 
     //db에러 체크
     public <T> boolean checkDB(T t) {
         if(t == null) throw new AppException(ErrorCode.DATABASE_ERROR, "데이터베이스 에러입니다");
         return true;
+    }
+
+    //댓글 존재 확인
+    public Comment findCommentById(int id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND,"해당 댓글을 찾을 수 없습니다"));
     }
 }

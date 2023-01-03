@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class PostService {
     //포스트 리스트
     @Transactional
     public Page<PostListResponse> postList(Pageable pageable) {
-        return PostListResponse.pageList(postRepository.findAll(pageable));
+        return PostListResponse.pageList(postRepository.findAllByDeletedAtIsNull(pageable));
     }
 
     //포스트 작성
@@ -56,6 +57,7 @@ public class PostService {
     @Transactional
     public Response<PostDetailResponse> detailedPost(int id) {
         //id에 대한 글을 꺼내옴
+        //삭제된 포스트인지 확인
         Post post = verificationService.findPostById(id);
 
         return Response.success(PostDetailResponse.response(post));
@@ -70,7 +72,7 @@ public class PostService {
         //db에 있던 포스트의 유저와 해당 유저의 이름을 비교한다
         //admin일경우 스킵한다
         if(UserRole.USER.equals(userRole)) {
-            verificationService.checkSameUserName(post.getUser().getUserName(),userName);
+            verificationService.checkSameUserName(post.getUser().getUserName(),userName,"포스트");
         }
 
         //내용이 비어있지 않을 경우에만 값을 추가시킨다
@@ -95,16 +97,16 @@ public class PostService {
         //해당 포스트의 userNamer과 요청된 userName이 일치하는지 확인
         //admin일경우 스킵
         if(UserRole.USER.equals(userRole)) {
-            verificationService.checkSameUserName(post.getUser().getUserName(),userName);
+            verificationService.checkSameUserName(post.getUser().getUserName(),userName,"포스트");
         }
 
         //delete실행
-        postRepository.deleteById(id);
+        //실제 삭제하는것이 아닌 deletedAt을 null이 아니게 만든다
+        post.setDeletedAt(LocalDateTime.now());
+        Post savedPost = postRepository.save(post);
 
-        //delete 삭제 확인
-        postRepository.findById(id).ifPresent(
-                (post1 -> new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다"))
-        );
+        //db에러 확인
+        verificationService.checkDB(savedPost);
 
         return Response.success(PostResponse.response("포스트 삭제 완료",id));
     }
