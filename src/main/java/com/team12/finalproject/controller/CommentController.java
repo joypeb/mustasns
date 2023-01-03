@@ -1,5 +1,6 @@
 package com.team12.finalproject.controller;
 
+import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.comment.CommentRequest;
 import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.service.CommentService;
@@ -24,17 +25,25 @@ public class CommentController {
 
     //댓글 조회
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> commentList(@PageableDefault(size = 10) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @PathVariable int id) {
+    public ResponseEntity<Response> commentList(@PageableDefault(size = 10) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @PathVariable int id) {
         return ResponseEntity.ok().body(commentService.commentList(id, pageable));
     }
 
     //댓글 작성
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> writeComment(@RequestBody CommentRequest commentRequest, @PathVariable int id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Response> writeComment(@RequestBody CommentRequest commentRequest, @PathVariable int id, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok().body(commentService.writeComment(id, user.getUserName(), commentRequest.getComment()));
     }
 
     //댓글 수정
+    @PutMapping("{postId}/comments/{commentId}")
+    public ResponseEntity<Response> modifyComment(@RequestBody CommentRequest commentRequest, @PathVariable int postId, @PathVariable int commentId, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(commentService.modifyComment(postId,commentId,user.getUserName(),commentRequest.getComment()));
+    }
 
     //댓글 삭제
+    @DeleteMapping("{postId}/comments/{commentId}")
+    public ResponseEntity<Response> deleteComment(@PathVariable int postId, @PathVariable int commentId, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(commentService.deleteComment(commentId,user.getUserName(),user.getRole()));
+    }
 }
