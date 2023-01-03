@@ -1,10 +1,8 @@
 package com.team12.finalproject.fixture;
 
-import com.team12.finalproject.domain.User;
-import com.team12.finalproject.domain.UserRole;
+import com.team12.finalproject.domain.entity.User;
+import com.team12.finalproject.domain.role.UserRole;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 public class UserFixture {

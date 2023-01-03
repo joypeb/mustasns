@@ -1,6 +1,6 @@
 package com.team12.finalproject.fixture;
 
-import com.team12.finalproject.domain.Post;
+import com.team12.finalproject.domain.entity.Post;
 
 public class PostFixture {
     public static Post get(String userName, String password) {

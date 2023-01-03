@@ -1,15 +1,12 @@
 package com.team12.finalproject.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team12.finalproject.domain.User;
-import com.team12.finalproject.domain.UserRole;
+import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
+import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeRequest;
 import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeResponse;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
-import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
-import com.team12.finalproject.domain.dto.userJoin.UserJoinResult;
 import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
@@ -26,15 +23,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -61,7 +54,7 @@ class UserControllerTest {
     @WithMockUser
     void join_s() throws Exception {
         when(userService.join(userFixture.getUserName(),userFixture.getPassword()))
-                .thenReturn(new Response<UserJoinResult>("SUCCESS",new UserJoinResult(
+                .thenReturn(new Response<UserJoinResponse>("SUCCESS",new UserJoinResponse(
                         1,userFixture.getUserName())));
 
         mockMvc.perform(post("/api/v1/users/join")

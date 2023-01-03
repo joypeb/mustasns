@@ -1,8 +1,7 @@
 package com.team12.finalproject.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team12.finalproject.domain.Post;
-import com.team12.finalproject.domain.User;
+import com.team12.finalproject.domain.entity.Post;
+import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
@@ -13,41 +12,32 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PostServiceTest {
 
+    @Mock
     PostService postService;
 
     PostRepository postRepository = Mockito.mock(PostRepository.class);
     UserRepository userRepository = Mockito.mock(UserRepository.class);
 
-    FindUser findUser;
+    @Mock
+    VerificationService verificationService;
 
     @BeforeEach
     void before() {
-        findUser = new FindUser(userRepository);
-        postService = new PostService(postRepository,userRepository,findUser);
+        verificationService = new VerificationService(userRepository, postRepository);
+        postService = new PostService(postRepository, verificationService);
     }
 
     @Test
@@ -59,8 +49,8 @@ class PostServiceTest {
         Post mockPost = mock(Post.class);
         User mockUser = mock(User.class);
 
-        when(userRepository.findByUserName(postFixture.getUser().getUserName()))
-                .thenReturn(Optional.of(mockUser));
+        when(verificationService.findUserByUserName(postFixture.getUser().getUserName()))
+                .thenReturn(mockUser);
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
@@ -118,7 +108,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertDoesNotThrow(() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName()));
+        Assertions.assertDoesNotThrow(() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
 
@@ -138,7 +128,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
 
@@ -160,7 +150,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
     @Test
@@ -179,7 +169,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
     @Test
@@ -198,7 +188,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenThrow(new AppException(ErrorCode.DATABASE_ERROR,"데이터베이스 에러입니다"));
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
 
@@ -218,7 +208,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertDoesNotThrow(() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName()));
+        Assertions.assertDoesNotThrow(() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
     @Test
@@ -237,7 +227,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
     @Test
@@ -256,7 +246,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
     }
 
 }
