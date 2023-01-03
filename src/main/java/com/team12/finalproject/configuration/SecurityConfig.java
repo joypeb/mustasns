@@ -34,16 +34,27 @@ public class SecurityConfig {
         return httpSecurity
                 .httpBasic().disable()
                 .csrf().disable()
-                .cors().and()
+                .cors()
+                .and()
+
+                //인증 확인
                 .authorizeRequests()
+                //전부 허가
                 .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/api/v1/users/join", "/api/v1/users/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts","/api/v1/posts/**","api/v1/posts/**/comments").permitAll()// join, login은 언제나 가능
+                //post
                 .antMatchers(HttpMethod.POST, "/api/v1/posts").authenticated()
                 .antMatchers(HttpMethod.PUT,"/api/v1/posts/**").authenticated()
                 .antMatchers(HttpMethod.DELETE,"/api/v1/posts/**").authenticated()
+                //comment
                 .antMatchers(HttpMethod.POST, "/api/v1/posts/**/comments").authenticated()
+                .antMatchers(HttpMethod.PUT,"/api/v1/posts/**/comments/**").authenticated()
+                .antMatchers(HttpMethod.DELETE,"/api/v1/posts/**/comments/**").authenticated()
+                //admin
                 .antMatchers(HttpMethod.POST,"/api/v1/users/**/role/change").hasRole("ADMIN")
                 .and()
+
+                //jwt
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
                 .and()
