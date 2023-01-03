@@ -28,15 +28,12 @@ public class UserController {
     //User 로그인
     @PostMapping("/login")
     public ResponseEntity<Response> login(@RequestBody UserLoginRequest userLoginRequest) {
-        //Map<String,String> tokenMap = userService.login(userLoginRequest);
-        //HttpHeaders headers = new HttpHeaders();
-        //headers.add("refreshToken",tokenMap.get("refreshToken"));
         return ResponseEntity.ok()
                 .body(userService.login(userLoginRequest.getUserName(), userLoginRequest.getPassword()));
     }
 
     @PostMapping("/{id}/role/change")
-    public ResponseEntity<?> roleChange(@PathVariable Integer id, @RequestBody AdminRoleChangeRequest adminRoleChangeRequest) {
+    public ResponseEntity<?> roleChange(@PathVariable int id, @RequestBody AdminRoleChangeRequest adminRoleChangeRequest) {
         return ResponseEntity.ok()
                 .body(userService.roleChange(id, adminRoleChangeRequest.getRole()));
     }
