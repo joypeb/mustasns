@@ -6,6 +6,7 @@ import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.fixture.PostFixture;
+import com.team12.finalproject.repository.CommentRepository;
 import com.team12.finalproject.repository.PostRepository;
 import com.team12.finalproject.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -30,13 +31,14 @@ class PostServiceTest {
 
     PostRepository postRepository = Mockito.mock(PostRepository.class);
     UserRepository userRepository = Mockito.mock(UserRepository.class);
+    CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
 
     @Mock
     VerificationService verificationService;
 
     @BeforeEach
     void before() {
-        verificationService = new VerificationService(userRepository, postRepository);
+        verificationService = new VerificationService(userRepository, postRepository, commentRepository);
         postService = new PostService(postRepository, verificationService);
     }
 
