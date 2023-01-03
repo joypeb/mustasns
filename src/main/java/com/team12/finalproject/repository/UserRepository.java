@@ -1,6 +1,6 @@
 package com.team12.finalproject.repository;
 
-import com.team12.finalproject.domain.User;
+import com.team12.finalproject.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
