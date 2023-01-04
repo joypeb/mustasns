@@ -36,13 +36,13 @@ public class CommentController {
     }
 
     //댓글 수정
-    @PutMapping("{postId}/comments/{commentId}")
+    @PutMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Response> modifyComment(@RequestBody CommentRequest commentRequest, @PathVariable int postId, @PathVariable int commentId, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok().body(commentService.modifyComment(postId,commentId,user.getUserName(),commentRequest.getComment()));
     }
 
     //댓글 삭제
-    @DeleteMapping("{postId}/comments/{commentId}")
+    @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Response> deleteComment(@PathVariable int postId, @PathVariable int commentId, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok().body(commentService.deleteComment(commentId,user.getUserName(),user.getRole()));
     }
