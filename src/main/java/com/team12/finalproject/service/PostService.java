@@ -35,8 +35,8 @@ public class PostService {
 
     //포스트 리스트
     @Transactional
-    public Page<PostListResponse> postList(Pageable pageable) {
-        return PostListResponse.pageList(postRepository.findAllByDeletedAtIsNull(pageable));
+    public Response<PostListResponse> postList(Pageable pageable) {
+        return Response.success(PostListResponse.pageList(postRepository.findAllByDeletedAtIsNull(pageable)));
     }
 
     //포스트 작성

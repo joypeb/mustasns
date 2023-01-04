@@ -1,5 +1,6 @@
 package com.team12.finalproject.controller;
 
+import com.team12.finalproject.domain.dto.post.PostListResponse;
 import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostRequest;
@@ -25,9 +26,8 @@ public class PostController {
 
     //포스트 목록
     @GetMapping
-    public ResponseEntity<Page> postList(@PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok()
-                .body(postService.postList(pageable));
+    public ResponseEntity<Response> postList(@PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok().body(postService.postList(pageable));
     }
 
     //포스트 작성
