@@ -68,7 +68,10 @@ public class VerificationService {
 
     //댓글 존재 확인
     public Comment findCommentById(int id) {
-        return commentRepository.findById(id)
+        Comment commentDetail = commentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND,"해당 댓글을 찾을 수 없습니다"));
+        if(commentDetail.getDeletedAt() != null)
+            throw new AppException(ErrorCode.COMMENT_NOT_FOUND,"해당 댓글을 찾을 수 없습니다");
+        return commentDetail;
     }
 }

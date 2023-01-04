@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +30,7 @@ public class CommentService {
     //댓글 목록
     @Transactional
     public Response<CommentListResponse> commentList(int postId, Pageable pageable) {
-        return Response.success(CommentListResponse.pageList(commentRepository.findAllByPostId(postId,pageable)));
+        return Response.success(CommentListResponse.pageList(commentRepository.findAllByPostIdAndDeletedAtIsNull(postId,pageable)));
     }
 
     //댓글 작성
@@ -78,11 +80,12 @@ public class CommentService {
             verificationService.checkSameUserName(userName,commentDetail.getUser().getUserName(),"댓글");
 
         //댓글 삭제
-        commentRepository.deleteById(commentId);
+        commentDetail.setDeletedAt(LocalDateTime.now());
+        Comment deletedComment = commentRepository.save(commentDetail);
 
         //db에러 체크
-        commentRepository.findById(commentId)
-                .ifPresent(comment -> {throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");});
+        if(deletedComment.getDeletedAt() == null)
+            throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
 
         return Response.success(CommentDeleteResponse.response("댓글 삭제 완료",commentId));
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -27,6 +28,8 @@ public class Comment extends BaseEntity{
     @JoinColumn(name="post_id")
     @JsonIgnore
     private Post post;
+
+    private LocalDateTime deletedAt;
 
     public static Comment save(String comment, Post post, User user) {
         return Comment.builder()
