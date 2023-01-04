@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Page<Post> findAllByDeletedAtIsNull(Pageable pageable);
+    Page<Post> findAllByUser_UserName(String userName, Pageable pageable);
 }
