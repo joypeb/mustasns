@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 //전부 허가
                 .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/api/v1/users/join", "/api/v1/users/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/posts","/api/v1/posts/**","api/v1/posts/**/comments").permitAll()// join, login은 언제나 가능
+                .antMatchers(HttpMethod.GET, "/api/v1/posts","/api/v1/posts/**","api/v1/posts/**/comments","api/v1/posts/**/likes").permitAll()// join, login은 언제나 가능
                 //post
                 .antMatchers(HttpMethod.POST, "/api/v1/posts").authenticated()
                 .antMatchers(HttpMethod.PUT,"/api/v1/posts/**").authenticated()
@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/v1/posts/**/comments").authenticated()
                 .antMatchers(HttpMethod.PUT,"/api/v1/posts/**/comments/**").authenticated()
                 .antMatchers(HttpMethod.DELETE,"/api/v1/posts/**/comments/**").authenticated()
+                //like
+                .antMatchers(HttpMethod.POST,"/api/v1/posts/**/likes").authenticated()
                 //admin
                 .antMatchers(HttpMethod.POST,"/api/v1/users/**/role/change").hasRole("ADMIN")
                 .and()
