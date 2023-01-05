@@ -64,9 +64,9 @@ public class UserService {
 
     //권한 변경
     @Transactional
-    public AdminRoleChangeResponse roleChange(int id, String role) {
+    public AdminRoleChangeResponse roleChange(int userId, String role) {
         //user가 존재하는지 확인
-        User user = verificationService.findUserById(id);
+        User user = verificationService.findUserById(userId);
 
         //userRole이 정확히 들어왔는지 확인
         String userRole = role.toUpperCase();

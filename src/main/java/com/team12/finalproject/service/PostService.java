@@ -49,19 +49,19 @@ public class PostService {
 
     //포스트 상세
     @Transactional
-    public PostDetailResponse detailedPost(int id) {
+    public PostDetailResponse detailedPost(int postId) {
         //id에 대한 글을 꺼내옴
         //삭제된 포스트인지 확인
-        Post post = verificationService.findPostById(id);
+        Post post = verificationService.findPostById(postId);
 
         return PostDetailResponse.response(post);
     }
 
     //포스트 수정
     @Transactional
-    public PostResponse modifyPost(int id, String title, String body, String userName, UserRole userRole) {
+    public PostResponse modifyPost(int postId, String title, String body, String userName, UserRole userRole) {
         //기존의 포스트를 가져오면서 포스트를 확인한다
-        Post post = verificationService.findPostById(id);
+        Post post = verificationService.findPostById(postId);
 
         //db에 있던 포스트의 유저와 해당 유저의 이름을 비교한다
         //admin일경우 스킵한다
@@ -83,10 +83,10 @@ public class PostService {
 
     //포스트 삭제
     @Transactional
-    public PostResponse deletePost(int id, String userName, UserRole userRole) {
+    public PostResponse deletePost(int postId, String userName, UserRole userRole) {
 
         //해당 아이디의 포스트가 존재하는지 확인
-        Post post = verificationService.findPostById(id);
+        Post post = verificationService.findPostById(postId);
 
         //해당 포스트의 userNamer과 요청된 userName이 일치하는지 확인
         //admin일경우 스킵
@@ -98,7 +98,7 @@ public class PostService {
         //실제 삭제하는것이 아닌 deletedAt을 null이 아니게 만든다
         postRepository.delete(post);
 
-        return PostResponse.response("포스트 삭제 완료",id);
+        return PostResponse.response("포스트 삭제 완료",postId);
     }
 
 
