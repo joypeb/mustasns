@@ -2,6 +2,8 @@ package com.team12.finalproject.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE comment SET deleted_at = current_timestamp WHERE id = ?")
+@Where(clause = "deleted_at is NULL")
 public class Comment extends BaseEntity{
 
     @Id

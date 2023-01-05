@@ -2,6 +2,8 @@ package com.team12.finalproject.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "likes")
+@SQLDelete(sql = "UPDATE likes SET deleted_at = current_timestamp WHERE id = ?")
 public class Like extends BaseEntity{
 
     @Id
