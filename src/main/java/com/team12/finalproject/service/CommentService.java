@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class CommentService {
 
     private final VerificationService verificationService;
@@ -30,7 +31,7 @@ public class CommentService {
     //댓글 목록
     @Transactional
     public Response<CommentListResponse> commentList(int postId, Pageable pageable) {
-        return Response.success(CommentListResponse.pageList(commentRepository.findAllByPostIdAndDeletedAtIsNull(postId,pageable)));
+        return Response.success(CommentListResponse.pageList(commentRepository.findAllByPostId(postId,pageable)));
     }
 
     //댓글 작성
@@ -80,12 +81,7 @@ public class CommentService {
             verificationService.checkSameUserName(userName,commentDetail.getUser().getUserName(),"댓글");
 
         //댓글 삭제
-        commentDetail.setDeletedAt(LocalDateTime.now());
-        Comment deletedComment = commentRepository.save(commentDetail);
-
-        //db에러 체크
-        if(deletedComment.getDeletedAt() == null)
-            throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
+        commentRepository.delete(commentDetail);
 
         return Response.success(CommentDeleteResponse.response("댓글 삭제 완료",commentId));
     }

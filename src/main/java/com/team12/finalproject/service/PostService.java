@@ -7,25 +7,18 @@ import com.team12.finalproject.domain.role.UserRole;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.post.PostDetailResponse;
 import com.team12.finalproject.domain.dto.post.PostListResponse;
-import com.team12.finalproject.exception.AppException;
-import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.repository.PostRepository;
-import com.team12.finalproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostService {
 
     private final PostRepository postRepository;
@@ -36,7 +29,7 @@ public class PostService {
     //포스트 리스트
     @Transactional
     public Response<PostListResponse> postList(Pageable pageable) {
-        return Response.success(PostListResponse.pageList(postRepository.findAllByDeletedAtIsNull(pageable)));
+        return Response.success(PostListResponse.pageList(postRepository.findAll(pageable)));
     }
 
     //포스트 작성
@@ -102,11 +95,7 @@ public class PostService {
 
         //delete실행
         //실제 삭제하는것이 아닌 deletedAt을 null이 아니게 만든다
-        post.setDeletedAt(LocalDateTime.now());
-        Post savedPost = postRepository.save(post);
-
-        //db에러 확인
-        verificationService.checkDB(savedPost);
+        postRepository.delete(post);
 
         return Response.success(PostResponse.response("포스트 삭제 완료",id));
     }
