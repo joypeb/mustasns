@@ -24,15 +24,15 @@ public class CommentController {
 
 
     //댓글 조회
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<Response> commentList(@PageableDefault(size = 10) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @PathVariable int id) {
-        return ResponseEntity.ok().body(commentService.commentList(id, pageable));
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<Response> commentList(@PageableDefault(size = 10) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @PathVariable int postId) {
+        return ResponseEntity.ok().body(commentService.commentList(postId, pageable));
     }
 
     //댓글 작성
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<Response> writeComment(@RequestBody CommentRequest commentRequest, @PathVariable int id, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok().body(commentService.writeComment(id, user.getUserName(), commentRequest.getComment()));
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Response> writeComment(@RequestBody CommentRequest commentRequest, @PathVariable int postId, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(commentService.writeComment(postId, user.getUserName(), commentRequest.getComment()));
     }
 
     //댓글 수정
