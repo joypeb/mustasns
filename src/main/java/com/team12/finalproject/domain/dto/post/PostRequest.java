@@ -1,5 +1,6 @@
 package com.team12.finalproject.domain.dto.post;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 @Builder
@@ -9,6 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class PostRequest {
+
+    @ApiModelProperty(example = "제목")
     private String title;
+    @ApiModelProperty(example = "내용")
     private String body;
 }
