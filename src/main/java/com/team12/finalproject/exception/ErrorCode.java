@@ -13,7 +13,8 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 포스트가 없습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DB에러"),
     INVALID_USERROLE(HttpStatus.UNAUTHORIZED,"userRole이 잘못되었습니다"),
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 comment를 찾을 수 없습니다")
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 comment를 찾을 수 없습니다"),
+    ALARM_NOT_FOUNT(HttpStatus.NOT_FOUND,"해당 Alarm을 찾을 수 없습니다")
     ;
 
     HttpStatus httpStatus;
