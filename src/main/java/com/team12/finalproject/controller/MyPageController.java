@@ -25,6 +25,7 @@ public class MyPageController {
 
     @GetMapping("/my")
     public ResponseEntity<Response> myFeed(@AuthenticationPrincipal User user, @PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(myPageService.myFeed(user.getUserName(), pageable));
+        return ResponseEntity.ok()
+                .body(Response.success(myPageService.myFeed(user.getUserName(), pageable)));
     }
 }

@@ -25,7 +25,11 @@ public class LikeService {
     private final VerificationService verificationService;
 
     @Transactional
-    public Response<?> like(int postId, String userName) {
+    public String like(int postId, String userName) {
+        String likeString = "좋아요를 눌렀습니다";
+        String unlikeString = "좋아요를 취소했습니다";
+        String error = "에러입니다";
+
         //글에 대해 좋아요를 했는지 확인
         //이미 좋아요가 되있으면 좋아요를 취소시킨다
         User user = verificationService.findUserByUserName(userName);
@@ -39,7 +43,7 @@ public class LikeService {
 
             verificationService.checkDB(savedLike);
 
-            return Response.success("좋아요를 눌렀습니다");
+            return likeString;
         }
         else if(like.get().getDeletedAt() != null) {
             int result = likeRepository.updateByLikeId(like.get().getId());
@@ -47,17 +51,17 @@ public class LikeService {
             if(result < 1)
                 throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
 
-            return Response.success("좋아요를 눌렀습니다");
+            return likeString;
         }
         else if (like.get().getDeletedAt() == null) {
             likeRepository.delete(like.get());
 
-            return Response.success("좋아요를 취소했습니다");
+            return unlikeString;
         }
-        return Response.error("에러입니다");
+        return error;
     }
 
-    public Response<?> likeCount(int postId) {
-        return Response.success(likeRepository.countByPostId(postId));
+    public int likeCount(int postId) {
+        return likeRepository.countByPostId(postId);
     }
 }

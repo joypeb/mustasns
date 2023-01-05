@@ -13,6 +13,7 @@ import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +31,13 @@ public class CommentService {
 
     //댓글 목록
     @Transactional
-    public Response<CommentListResponse> commentList(int postId, Pageable pageable) {
-        return Response.success(CommentListResponse.pageList(commentRepository.findAllByPostId(postId,pageable)));
+    public Page<CommentListResponse> commentList(int postId, Pageable pageable) {
+        return CommentListResponse.pageList(commentRepository.findAllByPostId(postId,pageable));
     }
 
     //댓글 작성
     @Transactional
-    public Response<CommentResponse> writeComment(int postId, String userName, String comment) {
+    public CommentResponse writeComment(int postId, String userName, String comment) {
         //post가 존재하는지 확인
         Post post = verificationService.findPostById(postId);
 
@@ -46,10 +47,10 @@ public class CommentService {
         //comment 작성
         Comment commentDetail = commentRepository.save(Comment.save(comment,post,user));
 
-        return Response.success(CommentResponse.response(commentDetail));
+        return CommentResponse.response(commentDetail);
     }
 
-    public Response<?> modifyComment(int postId, int commentId, String userName, String comment) {
+    public CommentResponse modifyComment(int postId, int commentId, String userName, String comment) {
         //post가 존재하는지 확인
         Post post = verificationService.findPostById(postId);
 
@@ -66,12 +67,12 @@ public class CommentService {
         //db에러 체크
         verificationService.checkDB(savedComment);
 
-        return Response.success(CommentResponse.response(savedComment));
+        return CommentResponse.response(savedComment);
     }
 
 
     //댓글 삭제
-    public Response<CommentDeleteResponse> deleteComment(int commentId, String userName, UserRole role) {
+    public CommentDeleteResponse deleteComment(int commentId, String userName, UserRole role) {
         //댓글이 존재하는지 확인
         Comment commentDetail = verificationService.findCommentById(commentId);
 
@@ -83,6 +84,6 @@ public class CommentService {
         //댓글 삭제
         commentRepository.delete(commentDetail);
 
-        return Response.success(CommentDeleteResponse.response("댓글 삭제 완료",commentId));
+        return CommentDeleteResponse.response("댓글 삭제 완료",commentId);
     }
 }

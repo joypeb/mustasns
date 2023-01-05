@@ -4,6 +4,7 @@ import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.myFeed.MyFeedResponse;
 import com.team12.finalproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ public class MyPageService {
 
     private final PostRepository postRepository;
 
-    public Response<?> myFeed(String userName, Pageable pageable) {
-        return Response.success(MyFeedResponse.pageList(postRepository.findAllByUser_UserName(userName, pageable)));
+    public Page<MyFeedResponse> myFeed(String userName, Pageable pageable) {
+        return MyFeedResponse.pageList(postRepository.findAllByUser_UserName(userName, pageable));
     }
 }

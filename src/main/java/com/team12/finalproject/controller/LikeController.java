@@ -20,11 +20,13 @@ public class LikeController {
 
     @PostMapping("/{postId}/likes")
     public ResponseEntity<Response> like(@PathVariable("postId") int postId, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok().body(likeService.like(postId,user.getUserName()));
+        return ResponseEntity.ok()
+                .body(Response.success(likeService.like(postId,user.getUserName())));
     }
 
     @GetMapping("/{postId}/likes")
     public ResponseEntity<Response> likeCount(@PathVariable("postId") int postId) {
-        return ResponseEntity.ok().body(likeService.likeCount(postId));
+        return ResponseEntity.ok()
+                .body(Response.success(likeService.likeCount(postId)));
     }
 }

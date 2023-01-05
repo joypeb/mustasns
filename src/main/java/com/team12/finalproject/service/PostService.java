@@ -10,6 +10,7 @@ import com.team12.finalproject.domain.dto.post.PostListResponse;
 import com.team12.finalproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +29,13 @@ public class PostService {
 
     //포스트 리스트
     @Transactional
-    public Response<PostListResponse> postList(Pageable pageable) {
-        return Response.success(PostListResponse.pageList(postRepository.findAll(pageable)));
+    public Page<PostListResponse> postList(Pageable pageable) {
+        return PostListResponse.pageList(postRepository.findAll(pageable));
     }
 
     //포스트 작성
     @Transactional
-    public Response<PostResponse> writePost(String title, String body, String userName) {
+    public PostResponse writePost(String title, String body, String userName) {
         //userName이 존재하는지 확인
         User user = verificationService.findUserByUserName(userName);
 
@@ -42,23 +43,23 @@ public class PostService {
         Post post = postRepository.save(Post.save(user,title,body));
         verificationService.checkDB(post);
 
-        return Response.success(PostResponse.response("포스트 등록 완료", post.getId()));
+        return PostResponse.response("포스트 등록 완료", post.getId());
     }
 
 
     //포스트 상세
     @Transactional
-    public Response<PostDetailResponse> detailedPost(int id) {
+    public PostDetailResponse detailedPost(int id) {
         //id에 대한 글을 꺼내옴
         //삭제된 포스트인지 확인
         Post post = verificationService.findPostById(id);
 
-        return Response.success(PostDetailResponse.response(post));
+        return PostDetailResponse.response(post);
     }
 
     //포스트 수정
     @Transactional
-    public Response<PostResponse> modifyPost(int id, String title, String body, String userName, UserRole userRole) {
+    public PostResponse modifyPost(int id, String title, String body, String userName, UserRole userRole) {
         //기존의 포스트를 가져오면서 포스트를 확인한다
         Post post = verificationService.findPostById(id);
 
@@ -77,12 +78,12 @@ public class PostService {
         verificationService.checkDB(postModified);
 
         //postResult에 결과를 담아 리턴한다
-        return Response.success(PostResponse.response("포스트 수정 완료", postModified.getId()));
+        return PostResponse.response("포스트 수정 완료", postModified.getId());
     }
 
     //포스트 삭제
     @Transactional
-    public Response<PostResponse> deletePost(int id, String userName, UserRole userRole) {
+    public PostResponse deletePost(int id, String userName, UserRole userRole) {
 
         //해당 아이디의 포스트가 존재하는지 확인
         Post post = verificationService.findPostById(id);
@@ -97,7 +98,7 @@ public class PostService {
         //실제 삭제하는것이 아닌 deletedAt을 null이 아니게 만든다
         postRepository.delete(post);
 
-        return Response.success(PostResponse.response("포스트 삭제 완료",id));
+        return PostResponse.response("포스트 삭제 완료",id);
     }
 
 

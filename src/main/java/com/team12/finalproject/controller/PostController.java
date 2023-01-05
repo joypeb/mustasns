@@ -27,35 +27,35 @@ public class PostController {
     //포스트 목록
     @GetMapping
     public ResponseEntity<Response> postList(@PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(postService.postList(pageable));
+        return ResponseEntity.ok().body(Response.success(postService.postList(pageable)));
     }
 
     //포스트 작성
     @PostMapping
     public ResponseEntity<Response> writePost(@RequestBody PostRequest postRequest, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(postService.writePost(postRequest.getTitle(),postRequest.getBody(),user.getUserName()));
+                .body(Response.success(postService.writePost(postRequest.getTitle(),postRequest.getBody(),user.getUserName())));
     }
 
     //포스트 상세
-    @GetMapping("/{id}")
-    public ResponseEntity<Response> detailedPost(@PathVariable int id) {
+    @GetMapping("/{postId}")
+    public ResponseEntity<Response> detailedPost(@PathVariable int postId) {
         return ResponseEntity.ok()
-                .body(postService.detailedPost(id));
+                .body(Response.success(postService.detailedPost(postId)));
     }
 
     //포스트 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<Response> modifyPost(@PathVariable int id, @RequestBody PostRequest postRequest, @AuthenticationPrincipal User user) {
+    @PutMapping("/{postId}")
+    public ResponseEntity<Response> modifyPost(@PathVariable int postId, @RequestBody PostRequest postRequest, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(postService.modifyPost(id,postRequest.getTitle(),postRequest.getBody(), user.getUserName(), user.getRole()));
+                .body(Response.success(postService.modifyPost(postId,postRequest.getTitle(),postRequest.getBody(), user.getUserName(), user.getRole())));
     }
 
     //포스트 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Response> deletePost(@PathVariable int id, @AuthenticationPrincipal User user) {
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Response> deletePost(@PathVariable int postId, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(postService.deletePost(id, user.getUserName(),user.getRole()));
+                .body(Response.success(postService.deletePost(postId, user.getUserName(),user.getRole())));
     }
 
 

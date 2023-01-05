@@ -64,7 +64,7 @@ class PostControllerTest {
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void write_post_s() throws Exception {
         when(postService.writePost(anyString(),anyString(),anyString()))
-                .thenReturn(Response.success(PostResponse.response("포스트 등록 완료", 1)));
+                .thenReturn(PostResponse.response("포스트 등록 완료", 1));
 
         mockMvc.perform(post("/api/v1/posts")
                 .with(csrf())
@@ -113,12 +113,12 @@ class PostControllerTest {
     @DisplayName("포스트 상세조회")
     @WithMockUser
     void post_detail_s() throws Exception {
-        when(postService.detailedPost(1)).thenReturn(Response.success(PostDetailResponse.builder()
+        when(postService.detailedPost(1)).thenReturn(PostDetailResponse.builder()
                 .id(1)
                 .title("")
                 .body("")
                 .userName("")
-                .build()));
+                .build());
 
         mockMvc.perform(get("/api/v1/posts/1")
                 .with(csrf())
@@ -127,12 +127,12 @@ class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Response<PostDetailResponse> postDetailResult = postService.detailedPost(1);
+        PostDetailResponse postDetailResult = postService.detailedPost(1);
 
-        assertNotNull(postDetailResult.getResult().getId());
-        assertNotNull(postDetailResult.getResult().getTitle());
-        assertNotNull(postDetailResult.getResult().getBody());
-        assertNotNull(postDetailResult.getResult().getUserName());
+        assertNotNull(postDetailResult.getId());
+        assertNotNull(postDetailResult.getTitle());
+        assertNotNull(postDetailResult.getBody());
+        assertNotNull(postDetailResult.getUserName());
     }
 
     @Test
@@ -142,7 +142,7 @@ class PostControllerTest {
         PostResponse postRes = PostResponse.builder().message("").postId(1).build();
 
         when(postService.modifyPost(1,"","","", UserRole.USER))
-                .thenReturn(Response.success(postRes));
+                .thenReturn(postRes);
 
         mockMvc.perform(put("/api/v1/posts/1")
                 .with(csrf())
@@ -208,7 +208,7 @@ class PostControllerTest {
     void post_delete_s() throws Exception {
         PostResponse postRes = new PostResponse("",1);
         when(postService.deletePost(1,"",UserRole.USER))
-                .thenReturn(Response.success(postRes));
+                .thenReturn(postRes);
         mockMvc.perform(delete("/api/v1/posts/1")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -223,7 +223,7 @@ class PostControllerTest {
     void post_delete_f1() throws Exception {
         PostResponse postRes = new PostResponse("",1);
         when(postService.deletePost(1,"",UserRole.USER))
-                .thenReturn(Response.success(postRes));
+                .thenReturn(postRes);
 
         mockMvc.perform(delete("/api/v1/posts/1")
                         .with(csrf())

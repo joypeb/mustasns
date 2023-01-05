@@ -2,6 +2,7 @@ package com.team12.finalproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginResponse;
 import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.adminRoleChange.AdminRoleChangeRequest;
@@ -54,8 +55,8 @@ class UserControllerTest {
     @WithMockUser
     void join_s() throws Exception {
         when(userService.join(userFixture.getUserName(),userFixture.getPassword()))
-                .thenReturn(new Response<UserJoinResponse>("SUCCESS",new UserJoinResponse(
-                        1,userFixture.getUserName())));
+                .thenReturn(new UserJoinResponse(
+                        1,userFixture.getUserName()));
 
         mockMvc.perform(post("/api/v1/users/join")
                 .with(csrf())
@@ -84,7 +85,7 @@ class UserControllerTest {
     @DisplayName("로그인 성공")
     @WithMockUser
     void login_s() throws Exception {
-        when(userService.login(userFixture.getUserName(),userFixture.getPassword())).thenReturn(new Response<>());
+        when(userService.login(userFixture.getUserName(),userFixture.getPassword())).thenReturn(new UserLoginResponse(""));
 
         mockMvc.perform(post("/api/v1/users/login")
                 .with(csrf())
@@ -133,7 +134,7 @@ class UserControllerTest {
         AdminRoleChangeResponse adminRoleChangeResponse = new AdminRoleChangeResponse("",0);
 
         when(userService.roleChange(0, "ADMIN"))
-                .thenReturn(Response.success(adminRoleChangeResponse));
+                .thenReturn(adminRoleChangeResponse);
 
         mockMvc.perform(post("/api/v1/users/1/role/change")
                 .with(csrf())
@@ -151,7 +152,7 @@ class UserControllerTest {
         AdminRoleChangeResponse adminRoleChangeResponse = new AdminRoleChangeResponse("",0);
 
         when(userService.roleChange(any(), any()))
-                .thenReturn(Response.success(adminRoleChangeResponse));
+                .thenReturn(adminRoleChangeResponse);
 
         mockMvc.perform(post("/api/v1/users/1/role/change")
                         .with(csrf())

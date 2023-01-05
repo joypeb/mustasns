@@ -22,19 +22,19 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<Response> join(@RequestBody UserJoinRequest userJoinRequest) {
         return ResponseEntity.ok()
-                .body(userService.join(userJoinRequest.getUserName(), userJoinRequest.getPassword()));
+                .body(Response.success(userService.join(userJoinRequest.getUserName(), userJoinRequest.getPassword())));
     }
 
     //User 로그인
     @PostMapping("/login")
     public ResponseEntity<Response> login(@RequestBody UserLoginRequest userLoginRequest) {
         return ResponseEntity.ok()
-                .body(userService.login(userLoginRequest.getUserName(), userLoginRequest.getPassword()));
+                .body(Response.success(userService.login(userLoginRequest.getUserName(), userLoginRequest.getPassword())));
     }
 
-    @PostMapping("/{id}/role/change")
-    public ResponseEntity<?> roleChange(@PathVariable int id, @RequestBody AdminRoleChangeRequest adminRoleChangeRequest) {
+    @PostMapping("/{userId}/role/change")
+    public ResponseEntity<?> roleChange(@PathVariable int userId, @RequestBody AdminRoleChangeRequest adminRoleChangeRequest) {
         return ResponseEntity.ok()
-                .body(userService.roleChange(id, adminRoleChangeRequest.getRole()));
+                .body(Response.success(userService.roleChange(userId, adminRoleChangeRequest.getRole())));
     }
 }

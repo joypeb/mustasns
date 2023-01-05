@@ -34,7 +34,7 @@ public class UserService {
 
     //user 회원가입
     @Transactional
-    public Response<UserJoinResponse> join(String userName, String password) {
+    public UserJoinResponse join(String userName, String password) {
 
         //user중복 체크
         verificationService.duplicatedUser(userName);
@@ -43,12 +43,12 @@ public class UserService {
         User user = userRepository.save(User.save(userName, encoder.encode(password)));
         verificationService.checkDB(user);
 
-        return Response.success(UserJoinResponse.response(user));
+        return UserJoinResponse.response(user);
     }
 
     //user 로그인
     @Transactional
-    public Response<UserLoginResponse> login(String userName, String password) {
+    public UserLoginResponse login(String userName, String password) {
         //유저 아이디 확인
         User user = verificationService.findUserByUserName(userName);
 
@@ -59,12 +59,12 @@ public class UserService {
         //jwt발행
         String token = JwtTokenUtils.createToken(userName,user.getRole(),secretKey,expireTimems);
 
-        return Response.success(new UserLoginResponse(token));
+        return new UserLoginResponse(token);
     }
 
     //권한 변경
     @Transactional
-    public Response<AdminRoleChangeResponse> roleChange(int id, String role) {
+    public AdminRoleChangeResponse roleChange(int id, String role) {
         //user가 존재하는지 확인
         User user = verificationService.findUserById(id);
 
@@ -79,7 +79,7 @@ public class UserService {
         User changeRoleUser = userRepository.save(user);
         verificationService.checkDB(changeRoleUser);
 
-        return Response.success(AdminRoleChangeResponse.response(changeRoleUser));
+        return AdminRoleChangeResponse.response(changeRoleUser);
     }
 
 }
