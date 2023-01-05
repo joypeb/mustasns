@@ -4,12 +4,15 @@ import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.comment.CommentDeleteResponse;
 import com.team12.finalproject.domain.dto.comment.CommentListResponse;
 import com.team12.finalproject.domain.dto.comment.CommentResponse;
+import com.team12.finalproject.domain.entity.Alarm;
 import com.team12.finalproject.domain.entity.Comment;
 import com.team12.finalproject.domain.entity.Post;
 import com.team12.finalproject.domain.entity.User;
+import com.team12.finalproject.domain.role.AlarmType;
 import com.team12.finalproject.domain.role.UserRole;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
+import com.team12.finalproject.repository.AlarmRepository;
 import com.team12.finalproject.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,7 @@ public class CommentService {
 
     private final VerificationService verificationService;
     private final CommentRepository commentRepository;
+    private final AlarmRepository alarmRepository;
 
     //댓글 목록
     @Transactional
@@ -46,6 +50,11 @@ public class CommentService {
 
         //comment 작성
         Comment commentDetail = commentRepository.save(Comment.save(comment,post,user));
+        verificationService.checkDB(commentDetail);
+
+        //comment 작성 완료시 알림 발생
+        //자신이 쓴 댓글일 경우 알림을 발생시키지 않는다
+        verificationService.makeAlarm(AlarmType.NEW_COMMENT_ON_POST,post,user);
 
         return CommentResponse.response(commentDetail);
     }

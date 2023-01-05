@@ -1,18 +1,20 @@
 package com.team12.finalproject.service;
 
 import com.team12.finalproject.domain.dto.Response;
+import com.team12.finalproject.domain.entity.Alarm;
 import com.team12.finalproject.domain.entity.Like;
 import com.team12.finalproject.domain.entity.Post;
 import com.team12.finalproject.domain.entity.User;
+import com.team12.finalproject.domain.role.AlarmType;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
+import com.team12.finalproject.repository.AlarmRepository;
 import com.team12.finalproject.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -36,25 +38,32 @@ public class LikeService {
         Post post = verificationService.findPostById(postId);
         Optional<Like> like = likeRepository.findByPostAndUser(post,user);
 
-        log.info("like 확인 : " + like.get().getId());
-
         if(like.isEmpty()) {
+            //좋아요
             Like savedLike = likeRepository.save(Like.save(user,post,null));
-
             verificationService.checkDB(savedLike);
+
+            //알림 발생
+            verificationService.makeAlarm(AlarmType.NEW_LIKE_ON_POST,post,user);
 
             return likeString;
         }
         else if(like.get().getDeletedAt() != null) {
+            //좋아요
             int result = likeRepository.updateByLikeId(like.get().getId());
-
             if(result < 1)
                 throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
+
+            //알림 발생
+            verificationService.makeAlarm(AlarmType.NEW_LIKE_ON_POST,post,user);
 
             return likeString;
         }
         else if (like.get().getDeletedAt() == null) {
             likeRepository.delete(like.get());
+
+            //알림 제거
+            verificationService.deleteAlarm(verificationService.findAlarm(post,user));
 
             return unlikeString;
         }

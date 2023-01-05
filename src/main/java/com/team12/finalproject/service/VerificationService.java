@@ -1,10 +1,13 @@
 package com.team12.finalproject.service;
 
+import com.team12.finalproject.domain.entity.Alarm;
 import com.team12.finalproject.domain.entity.Comment;
 import com.team12.finalproject.domain.entity.Post;
 import com.team12.finalproject.domain.entity.User;
+import com.team12.finalproject.domain.role.AlarmType;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
+import com.team12.finalproject.repository.AlarmRepository;
 import com.team12.finalproject.repository.CommentRepository;
 import com.team12.finalproject.repository.PostRepository;
 import com.team12.finalproject.repository.UserRepository;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class VerificationService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final AlarmRepository alarmRepository;
 
     //userName으로 user찾기
     public User findUserByUserName(String userName) {
@@ -73,5 +78,21 @@ public class VerificationService {
         if(commentDetail.getDeletedAt() != null)
             throw new AppException(ErrorCode.COMMENT_NOT_FOUND,"해당 댓글을 찾을 수 없습니다");
         return commentDetail;
+    }
+
+    //알림 발생
+    public void makeAlarm(AlarmType alarmType, Post post, User user) {
+        if(post.getUser().getId() != user.getId())
+            alarmRepository.save(Alarm.save(alarmType,post,user));
+    }
+
+    //알림 찾기
+    public Alarm findAlarm(Post post, User user) {
+        return alarmRepository.findByTargetIdAndFromUserId(post.getId(),user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.ALARM_NOT_FOUNT,"해당 알림을 찾을 수 없습니다"));
+    }
+
+    public void deleteAlarm(Alarm alarm) {
+        alarmRepository.delete(alarm);
     }
 }
