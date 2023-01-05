@@ -35,4 +35,19 @@ public class Alarm extends BaseEntity{
     @JoinColumn(name="user_id")
     @JsonIgnore
     private User user;
+
+    public static Alarm save(AlarmType alarmType, Post post, User user) {
+        String text = "";
+        if(alarmType.equals(AlarmType.NEW_COMMENT_ON_POST)) text = "new comment!";
+        else if(alarmType.equals(AlarmType.NEW_LIKE_ON_POST)) text = "new like!";
+
+        return Alarm.builder()
+                .alarmType(alarmType)
+                .fromUserId(user.getId())
+                .targetId(post.getId())
+                .text(text)
+                .deleted_at(null)
+                .user(post.getUser())
+                .build();
+    }
 }
