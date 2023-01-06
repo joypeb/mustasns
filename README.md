@@ -9,6 +9,12 @@
 - Docker
 - AWS
 
+## ERD
+![ERD](src/main/resources/images/erd.png)
+
+## GIT branch
+![branch](src/main/resources/images/branch.png)
+
 ## 링크
  - REST
    - local swagger : http://localhost:8080/swagger-ui/index.html
@@ -26,6 +32,10 @@
 - [x] 로그인, 회원가입 구현
 - [x] 글 작성, 수정, 삭제, 상세, 목록 구현
 - [x] JWT를 이용해 권한이 있는 유저만 글 작성, 수정, 삭제가능
+- [x] 각 포스트마다 댓글추가, 수정, 삭제구현
+- [x] 각 포스트마다 좋아요, 좋아요 취소 구현
+- [x] 자신의 포스트에 다른 유저가 댓글 or 좋아요를 할 시 알림기능 구현
+- [x] 자신의 글들만 모아서 볼 수 있는 마이 피드 구현
 - [x] swagger를 이용해 api 자동화
 - [x] 테스트코드 작성
 - [x] ADMIN은 모든 권한허용
@@ -83,11 +93,11 @@ GET /api/v1/posts
 ```
 - 글 상세정보
 ```
-GET /api/v1/posts/{post-id}
+GET /api/v1/posts/{postId}
 ```
 - 글 수정
 ```
-PUT /api/v1/posts/{post-id}
+PUT /api/v1/posts/{postId}
 
 {
     "title":"제목",
@@ -96,13 +106,55 @@ PUT /api/v1/posts/{post-id}
 ```
 - 글 삭제
 ```
-DELETE /api/v1/posts/{post-id}
+DELETE /api/v1/posts/{postId}
 ```
 - 유저 권한 변경
 ```
-POST /api/v1/users/{id}/role/change
+POST /api/v1/users/{userId}/role/change
 
 {
     "userRole":"USER"|"ADMIN"
 }
+```
+- 댓글 목록
+```
+GET /api/v1/posts/{postId}/comments
+```
+- 댓글 작성
+```
+POST /api/v1/posts/{postId}/comments
+{
+   "comment":"댓글 내용"
+}
+```
+- 댓글 수정
+```
+PUT /api/v1/posts/{postId}/comments/{commentId}
+{
+   "comment":"댓글 수정 내용"
+}
+```
+- 댓글 삭제
+```
+DELETE /api/v1/posts/{postId}/comments/{commentId}
+```
+- 마이 피드
+```
+GET /api/v1/posts/my
+```
+- 특정 포스트 좋아요 개수
+```
+GET /api/v1/posts/{postId}/likes
+```
+- 좋아요 | 좋아요 취소
+```
+POST /api/v1/posts/{postId}/likes
+```
+- 특정 포스트 알림 목록
+```
+GET /{postId}/alarms
+```
+- 유저 알림 목록
+```
+GET /alarms
 ```
