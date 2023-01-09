@@ -2,6 +2,7 @@ package com.team12.finalproject.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team12.finalproject.domain.dto.post.PostListResponse;
+import com.team12.finalproject.domain.dto.post.PostRequest;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -34,11 +35,11 @@ public class Post extends BaseEntity{
 
 
 
-    public static Post save(User user, String title, String body) {
+    public static Post save(PostRequest postRequest, User user) {
         return Post.builder()
                 .user(user)
-                .title(title)
-                .body(body)
+                .title(postRequest.getTitle())
+                .body(postRequest.getBody())
                 .build();
     }
 

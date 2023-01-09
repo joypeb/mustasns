@@ -63,7 +63,7 @@ class PostControllerTest {
     @DisplayName("포스트 작성 성공")
     @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void write_post_s() throws Exception {
-        when(postService.writePost(anyString(),anyString(),anyString()))
+        when(postService.writePost(any(),any()))
                 .thenReturn(PostResponse.response("포스트 등록 완료", 1));
 
         mockMvc.perform(post("/api/v1/posts")
@@ -141,7 +141,7 @@ class PostControllerTest {
     void post_modified_s() throws Exception{
         PostResponse postRes = PostResponse.builder().message("").postId(1).build();
 
-        when(postService.modifyPost(1,"","","", UserRole.USER))
+        when(postService.modifyPost(1,any(),any()))
                 .thenReturn(postRes);
 
         mockMvc.perform(put("/api/v1/posts/1")
@@ -170,7 +170,7 @@ class PostControllerTest {
     void post_modified_f2() throws Exception{
         PostRequest postRequest = new PostRequest("","");
 
-        when(postService.modifyPost(1,"","","", UserRole.USER))
+        when(postService.modifyPost(1,any(),any()))
                 .thenThrow(new AppException(ErrorCode.INVALID_PERMISSION,""));
 
         mockMvc.perform(put("/api/v1/posts/1")
@@ -191,7 +191,7 @@ class PostControllerTest {
         String body = "b";
         PostRequest postRequest = new PostRequest(title,body);
         String userName = "user";
-        when(postService.modifyPost(id,title,body,userName,UserRole.USER))
+        when(postService.modifyPost(id,any(),any()))
                 .thenThrow(new AppException(ErrorCode.DATABASE_ERROR,""));
 
         this.mockMvc.perform(put("/api/v1/posts/{id}",id)
@@ -207,7 +207,7 @@ class PostControllerTest {
     @WithMockUser
     void post_delete_s() throws Exception {
         PostResponse postRes = new PostResponse("",1);
-        when(postService.deletePost(1,"",UserRole.USER))
+        when(postService.deletePost(1,any()))
                 .thenReturn(postRes);
         mockMvc.perform(delete("/api/v1/posts/1")
                 .with(csrf())
@@ -222,7 +222,7 @@ class PostControllerTest {
     @WithAnonymousUser
     void post_delete_f1() throws Exception {
         PostResponse postRes = new PostResponse("",1);
-        when(postService.deletePost(1,"",UserRole.USER))
+        when(postService.deletePost(1,any()))
                 .thenReturn(postRes);
 
         mockMvc.perform(delete("/api/v1/posts/1")
@@ -237,7 +237,7 @@ class PostControllerTest {
     @WithMockUser
     void post_delete_f2() throws Exception {
         PostResponse postRes = new PostResponse("",1);
-        when(postService.deletePost(1,"",UserRole.USER))
+        when(postService.deletePost(1,any()))
                 .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND,""));
 
         mockMvc.perform(delete("/api/v1/posts/1")

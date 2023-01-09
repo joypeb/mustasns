@@ -3,6 +3,7 @@ package com.team12.finalproject.service;
 import com.team12.finalproject.domain.dto.Response;
 import com.team12.finalproject.domain.dto.comment.CommentDeleteResponse;
 import com.team12.finalproject.domain.dto.comment.CommentListResponse;
+import com.team12.finalproject.domain.dto.comment.CommentRequest;
 import com.team12.finalproject.domain.dto.comment.CommentResponse;
 import com.team12.finalproject.domain.entity.Alarm;
 import com.team12.finalproject.domain.entity.Comment;
@@ -31,7 +32,6 @@ public class CommentService {
 
     private final VerificationService verificationService;
     private final CommentRepository commentRepository;
-    private final AlarmRepository alarmRepository;
 
     //댓글 목록
     @Transactional
@@ -41,25 +41,25 @@ public class CommentService {
 
     //댓글 작성
     @Transactional
-    public CommentResponse writeComment(int postId, String userName, String comment) {
+    public CommentResponse writeComment(int postId, CommentRequest commentRequest, User user) {
         //post가 존재하는지 확인
         Post post = verificationService.findPostById(postId);
 
         //user확인
-        User user = verificationService.findUserByUserName(userName);
+        User findUser = verificationService.findUserByUserName(user.getUserName());
 
         //comment 작성
-        Comment commentDetail = commentRepository.save(Comment.save(comment,post,user));
+        Comment commentDetail = commentRepository.save(Comment.save(commentRequest.getComment(),post,findUser));
         verificationService.checkDB(commentDetail);
 
         //comment 작성 완료시 알림 발생
         //자신이 쓴 댓글일 경우 알림을 발생시키지 않는다
-        verificationService.makeAlarm(AlarmType.NEW_COMMENT_ON_POST,post,user);
+        verificationService.makeAlarm(AlarmType.NEW_COMMENT_ON_POST,post,findUser);
 
         return CommentResponse.response(commentDetail);
     }
 
-    public CommentResponse modifyComment(int postId, int commentId, String userName, String comment) {
+    public CommentResponse modifyComment(int postId, int commentId,CommentRequest commentRequest, User user) {
         //post가 존재하는지 확인
         Post post = verificationService.findPostById(postId);
 
@@ -67,10 +67,10 @@ public class CommentService {
         Comment commentDetail = verificationService.findCommentById(commentId);
 
         //유저가 일치하는지 확인
-        verificationService.checkSameUserName(userName,commentDetail.getUser().getUserName(),"댓글");
+        verificationService.checkSameUserName(user.getUserName(),commentDetail.getUser().getUserName(),"댓글");
 
         //댓글 수정
-        commentDetail.setComment(comment);
+        commentDetail.setComment(commentRequest.getComment());
         Comment savedComment = commentRepository.save(commentDetail);
 
         //db에러 체크
@@ -81,14 +81,14 @@ public class CommentService {
 
 
     //댓글 삭제
-    public CommentDeleteResponse deleteComment(int commentId, String userName, UserRole role) {
+    public CommentDeleteResponse deleteComment(int commentId, User user) {
         //댓글이 존재하는지 확인
         Comment commentDetail = verificationService.findCommentById(commentId);
 
         //유저가 일치하는지 확인
         //ADMIN일경우 스킵
-        if(UserRole.USER.equals(role))
-            verificationService.checkSameUserName(userName,commentDetail.getUser().getUserName(),"댓글");
+        if(UserRole.USER.equals(user.getRole()))
+            verificationService.checkSameUserName(user.getUserName(), commentDetail.getUser().getUserName(),"댓글");
 
         //댓글 삭제
         commentRepository.delete(commentDetail);

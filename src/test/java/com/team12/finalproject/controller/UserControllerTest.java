@@ -54,7 +54,7 @@ class UserControllerTest {
     @DisplayName("회원가입 성공")
     @WithMockUser
     void join_s() throws Exception {
-        when(userService.join(userFixture.getUserName(),userFixture.getPassword()))
+        when(userService.join(any()))
                 .thenReturn(new UserJoinResponse(
                         1,userFixture.getUserName()));
 
@@ -70,7 +70,7 @@ class UserControllerTest {
     @DisplayName("회원가입 실패 유저 중복")
     @WithMockUser
     void join_f() throws Exception {
-        when(userService.join(any(),any()))
+        when(userService.join(any()))
                 .thenThrow(new AppException(ErrorCode.DUPLICATED_USER_NAME, "UserName이 중복됩니다"));
 
         mockMvc.perform(post("/api/v1/users/join")
@@ -85,7 +85,7 @@ class UserControllerTest {
     @DisplayName("로그인 성공")
     @WithMockUser
     void login_s() throws Exception {
-        when(userService.login(userFixture.getUserName(),userFixture.getPassword())).thenReturn(new UserLoginResponse(""));
+        when(userService.login(any())).thenReturn(new UserLoginResponse(""));
 
         mockMvc.perform(post("/api/v1/users/login")
                 .with(csrf())
@@ -99,7 +99,7 @@ class UserControllerTest {
     @DisplayName("로그인 실패 - username틀림")
     @WithMockUser
     void login_f1() throws Exception{
-        when(userService.login(any(),any())).thenThrow(
+        when(userService.login(any())).thenThrow(
                 new AppException(ErrorCode.USERNAME_NOT_FOUND,"userName이 틀렸습니다")
         );
 
@@ -115,7 +115,7 @@ class UserControllerTest {
     @DisplayName("로그인 실패 - password틀림")
     @WithMockUser
     void login_f2() throws Exception{
-        when(userService.login(any(),any()))
+        when(userService.login(any()))
                 .thenThrow(new AppException(ErrorCode.INVALID_PASSWORD,"password가 틀렸습니다"));
 
         mockMvc.perform(post("/api/v1/users/login")

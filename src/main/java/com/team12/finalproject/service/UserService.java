@@ -1,6 +1,8 @@
 package com.team12.finalproject.service;
 
+import com.team12.finalproject.domain.dto.userJoin.UserJoinRequest;
 import com.team12.finalproject.domain.dto.userJoin.UserJoinResponse;
+import com.team12.finalproject.domain.dto.userLogin.UserLoginRequest;
 import com.team12.finalproject.domain.entity.User;
 import com.team12.finalproject.domain.role.UserRole;
 import com.team12.finalproject.domain.dto.Response;
@@ -34,13 +36,13 @@ public class UserService {
 
     //user 회원가입
     @Transactional
-    public UserJoinResponse join(String userName, String password) {
+    public UserJoinResponse join(UserJoinRequest userJoinRequest) {
 
         //user중복 체크
-        verificationService.duplicatedUser(userName);
+        verificationService.duplicatedUser(userJoinRequest.getUserName());
 
         //user를 db에 저장후 db에러 체크
-        User user = userRepository.save(User.save(userName, encoder.encode(password)));
+        User user = userRepository.save(User.save(userJoinRequest.getUserName(), encoder.encode(userJoinRequest.getPassword())));
         verificationService.checkDB(user);
 
         return UserJoinResponse.response(user);
@@ -48,16 +50,16 @@ public class UserService {
 
     //user 로그인
     @Transactional
-    public UserLoginResponse login(String userName, String password) {
+    public UserLoginResponse login(UserLoginRequest userLoginRequest) {
         //유저 아이디 확인
-        User user = verificationService.findUserByUserName(userName);
+        User user = verificationService.findUserByUserName(userLoginRequest.getUserName());
 
         //유저 비밀번호 확인
-        if(!encoder.matches(password, user.getPassword()))
+        if(!encoder.matches(userLoginRequest.getPassword(), user.getPassword()))
             throw new AppException(ErrorCode.INVALID_PASSWORD,"패스워드가 틀립니다");
 
         //jwt발행
-        String token = JwtTokenUtils.createToken(userName,user.getRole(),secretKey,expireTimems);
+        String token = JwtTokenUtils.createToken(userLoginRequest.getUserName(),user.getRole(),secretKey,expireTimems);
 
         return new UserLoginResponse(token);
     }

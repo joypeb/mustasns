@@ -29,7 +29,7 @@ public class LikeController {
     @PostMapping("/{postId}/likes")
     public ResponseEntity<Response> like(@PathVariable("postId") int postId,@ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(likeService.like(postId,user.getUserName())));
+                .body(Response.success(likeService.like(postId,user)));
     }
 
     //좋아요 개수

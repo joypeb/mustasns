@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<Response> join(@RequestBody UserJoinRequest userJoinRequest) {
         return ResponseEntity.ok()
-                .body(Response.success(userService.join(userJoinRequest.getUserName(), userJoinRequest.getPassword())));
+                .body(Response.success(userService.join(userJoinRequest)));
     }
 
     //User 로그인
@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Response> login(@RequestBody UserLoginRequest userLoginRequest) {
         return ResponseEntity.ok()
-                .body(Response.success(userService.login(userLoginRequest.getUserName(), userLoginRequest.getPassword())));
+                .body(Response.success(userService.login(userLoginRequest)));
     }
 
     @ApiOperation(value = "유저 권한 변경", notes = "유저의 권한을 ADMIN, USER중에 하나로 바꿀 수 있습니다. ADMIN만 가능합니다")

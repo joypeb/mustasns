@@ -27,24 +27,24 @@ public class LikeService {
     private final VerificationService verificationService;
 
     @Transactional
-    public String like(int postId, String userName) {
+    public String like(int postId, User user) {
         String likeString = "좋아요를 눌렀습니다";
         String unlikeString = "좋아요를 취소했습니다";
         String error = "에러입니다";
 
         //글에 대해 좋아요를 했는지 확인
         //이미 좋아요가 되있으면 좋아요를 취소시킨다
-        User user = verificationService.findUserByUserName(userName);
+        User findUser = verificationService.findUserByUserName(user.getUserName());
         Post post = verificationService.findPostById(postId);
-        Optional<Like> like = likeRepository.findByPostAndUser(post,user);
+        Optional<Like> like = likeRepository.findByPostAndUser(post,findUser);
 
         if(like.isEmpty()) {
             //좋아요
-            Like savedLike = likeRepository.save(Like.save(user,post,null));
+            Like savedLike = likeRepository.save(Like.save(findUser,post,null));
             verificationService.checkDB(savedLike);
 
             //알림 발생
-            verificationService.makeAlarm(AlarmType.NEW_LIKE_ON_POST,post,user);
+            verificationService.makeAlarm(AlarmType.NEW_LIKE_ON_POST,post,findUser);
 
             return likeString;
         }
@@ -55,7 +55,7 @@ public class LikeService {
                 throw new AppException(ErrorCode.DATABASE_ERROR,"DB에러입니다");
 
             //알림 발생
-            verificationService.makeAlarm(AlarmType.NEW_LIKE_ON_POST,post,user);
+            verificationService.makeAlarm(AlarmType.NEW_LIKE_ON_POST,post,findUser);
 
             return likeString;
         }
@@ -63,7 +63,7 @@ public class LikeService {
             likeRepository.delete(like.get());
 
             //알림 제거
-            verificationService.deleteAlarm(verificationService.findAlarm(post,user));
+            verificationService.deleteAlarm(verificationService.findAlarm(post,findUser));
 
             return unlikeString;
         }

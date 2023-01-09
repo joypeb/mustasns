@@ -6,6 +6,7 @@ import com.team12.finalproject.domain.dto.post.PostRequest;
 import com.team12.finalproject.exception.AppException;
 import com.team12.finalproject.exception.ErrorCode;
 import com.team12.finalproject.fixture.PostFixture;
+import com.team12.finalproject.repository.AlarmRepository;
 import com.team12.finalproject.repository.CommentRepository;
 import com.team12.finalproject.repository.PostRepository;
 import com.team12.finalproject.repository.UserRepository;
@@ -32,13 +33,14 @@ class PostServiceTest {
     PostRepository postRepository = Mockito.mock(PostRepository.class);
     UserRepository userRepository = Mockito.mock(UserRepository.class);
     CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
+    AlarmRepository alarmRepository = Mockito.mock(AlarmRepository.class);
 
     @Mock
     VerificationService verificationService;
 
     @BeforeEach
     void before() {
-        verificationService = new VerificationService(userRepository, postRepository, commentRepository);
+        verificationService = new VerificationService(userRepository, postRepository, commentRepository, alarmRepository);
         postService = new PostService(postRepository, verificationService);
     }
 
@@ -56,7 +58,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertDoesNotThrow(() -> postService.writePost(postFixture.getTitle(),postFixture.getBody(), postFixture.getUser().getUserName()));
+        Assertions.assertDoesNotThrow(() -> postService.writePost(postRequest,mockUser));
     }
 
     @Test
@@ -73,7 +75,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.writePost(postFixture.getTitle(),postFixture.getBody(), postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.writePost(postRequest,mockUser));
     }
 
     @Test
@@ -90,7 +92,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenThrow(new AppException(ErrorCode.DATABASE_ERROR,"데이터베이스 오류입니다"));
 
-        Assertions.assertThrows(AppException.class,() -> postService.writePost(postFixture.getTitle(),postFixture.getBody(), postFixture.getUser().getUserName()));
+        Assertions.assertThrows(AppException.class,() -> postService.writePost(postRequest,mockUser));
     }
 
 
@@ -110,7 +112,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertDoesNotThrow(() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertDoesNotThrow(() -> postService.modifyPost(postFixture.getId(),postRequest,mockUser));
     }
 
 
@@ -130,7 +132,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postRequest,mockUser));
     }
 
 
@@ -152,7 +154,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postRequest,mockUser));
     }
 
     @Test
@@ -171,7 +173,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postRequest,mockUser));
     }
 
     @Test
@@ -190,7 +192,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenThrow(new AppException(ErrorCode.DATABASE_ERROR,"데이터베이스 에러입니다"));
 
-        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postFixture.getTitle(),postFixture.getBody(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertThrows(AppException.class,() -> postService.modifyPost(postFixture.getId(),postRequest,mockUser));
     }
 
 
@@ -210,7 +212,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertDoesNotThrow(() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertDoesNotThrow(() -> postService.deletePost(postFixture.getId(),mockUser));
     }
 
     @Test
@@ -229,7 +231,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),mockUser));
     }
 
     @Test
@@ -248,7 +250,7 @@ class PostServiceTest {
         when(postRepository.save(any()))
                 .thenReturn(mockPost);
 
-        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),postFixture.getUser().getUserName(),postFixture.getUser().getRole()));
+        Assertions.assertThrows(AppException.class,() -> postService.deletePost(postFixture.getId(),mockUser));
     }
 
 }

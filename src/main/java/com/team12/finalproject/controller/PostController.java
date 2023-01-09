@@ -42,7 +42,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Response> writePost(@RequestBody PostRequest postRequest, @ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(postService.writePost(postRequest.getTitle(),postRequest.getBody(),user.getUserName())));
+                .body(Response.success(postService.writePost(postRequest,user)));
     }
 
     //포스트 상세
@@ -60,7 +60,7 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<Response> modifyPost(@PathVariable int postId, @RequestBody PostRequest postRequest,@ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(postService.modifyPost(postId,postRequest.getTitle(),postRequest.getBody(), user.getUserName(), user.getRole())));
+                .body(Response.success(postService.modifyPost(postId,postRequest,user)));
     }
 
     //포스트 삭제
@@ -69,7 +69,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<Response> deletePost(@PathVariable int postId, @ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(postService.deletePost(postId, user.getUserName(),user.getRole())));
+                .body(Response.success(postService.deletePost(postId, user)));
     }
 
 

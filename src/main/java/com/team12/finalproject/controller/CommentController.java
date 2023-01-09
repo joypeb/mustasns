@@ -47,7 +47,7 @@ public class CommentController {
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Response> writeComment(@RequestBody CommentRequest commentRequest, @PathVariable int postId, @ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(commentService.writeComment(postId, user.getUserName(), commentRequest.getComment())));
+                .body(Response.success(commentService.writeComment(postId, commentRequest, user)));
     }
 
     //댓글 수정
@@ -59,7 +59,7 @@ public class CommentController {
     @PutMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Response> modifyComment(@RequestBody CommentRequest commentRequest, @PathVariable int postId, @PathVariable int commentId, @ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(commentService.modifyComment(postId,commentId,user.getUserName(),commentRequest.getComment())));
+                .body(Response.success(commentService.modifyComment(postId,commentId,commentRequest,user)));
     }
 
     //댓글 삭제
@@ -71,6 +71,6 @@ public class CommentController {
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Response> deleteComment(@PathVariable int postId, @PathVariable int commentId, @ApiIgnore @AuthenticationPrincipal User user) {
         return ResponseEntity.ok()
-                .body(Response.success(commentService.deleteComment(commentId,user.getUserName(),user.getRole())));
+                .body(Response.success(commentService.deleteComment(commentId,user)));
     }
 }

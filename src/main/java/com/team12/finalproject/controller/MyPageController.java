@@ -32,6 +32,6 @@ public class MyPageController {
     @GetMapping("/my")
     public ResponseEntity<Response> myFeed(@ApiIgnore @AuthenticationPrincipal User user,@ApiIgnore @PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok()
-                .body(Response.success(myPageService.myFeed(user.getUserName(), pageable)));
+                .body(Response.success(myPageService.myFeed(user, pageable)));
     }
 }
