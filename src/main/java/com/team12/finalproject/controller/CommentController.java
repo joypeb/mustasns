@@ -31,10 +31,7 @@ public class CommentController {
 
     //댓글 조회
     @ApiOperation(value = "댓글 목록 출력", notes = "특정 포스트의 댓글 목록을 페이징 형식으로 출력합니다")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "pageNumber", value = "페이지 번호", required = false, dataType = "java.lang.Integer", paramType = "path", defaultValue = "0"),
-            @ApiImplicitParam(name = "postId", value = "포스트 번호", required = true, dataType = "java.lang.Integer", paramType = "path", defaultValue = "None")
-    })
+    @ApiImplicitParam(name = "postId", value = "포스트 번호", required = true, dataType = "java.lang.Integer", paramType = "path", defaultValue = "None")
     @GetMapping("/{postId}/comments")
     public ResponseEntity<Response> commentList(@ApiIgnore @PageableDefault(size = 10) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @PathVariable int postId) {
         return ResponseEntity.ok()

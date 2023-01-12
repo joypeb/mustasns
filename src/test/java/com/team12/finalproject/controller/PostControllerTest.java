@@ -61,7 +61,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("포스트 작성 성공")
-    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockUser
     void write_post_s() throws Exception {
         when(postService.writePost(any(),any()))
                 .thenReturn(PostResponse.response("포스트 등록 완료", 1));

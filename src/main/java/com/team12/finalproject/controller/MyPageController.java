@@ -28,7 +28,6 @@ public class MyPageController {
 
     private final MyPageService myPageService;
     @ApiOperation(value = "마이 피드 출력", notes = "자신이 작성한 글들을 페이징 형식으로 출력합니다<br>로그인한 유저만 사용 가능합니다")
-    @ApiImplicitParam(name = "pageNumber", value = "페이지 번호", required = false, dataType = "java.lang.Integer", paramType = "path", defaultValue = "0")
     @GetMapping("/my")
     public ResponseEntity<Response> myFeed(@ApiIgnore @AuthenticationPrincipal User user,@ApiIgnore @PageableDefault(size = 20) @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok()

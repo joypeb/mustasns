@@ -21,7 +21,7 @@
    - aws swagger : http://ec2-15-164-216-178.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/index.html
 
 ## 주요 기능
-- 테스트 주도 개발을 진행하였습니다
+- post, join 테스트 주도 개발을 진행하였습니다
 - 예외와 에러가 발생할 것을 대비해 예외처리를 해주었습니다
 - 스프링 시큐리티와 jwt를 이용해 보안을 강화하였습니다
 - RESTful한 코드를 작성했습니다
