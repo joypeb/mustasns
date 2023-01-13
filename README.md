@@ -19,6 +19,7 @@
  - REST
    - local swagger : http://localhost:8080/swagger-ui/index.html
    - aws swagger : http://ec2-15-164-216-178.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/index.html
+   - (현재 aws서버는 내려갔습니다)
 
 ## 주요 기능
 - post, join 테스트 주도 개발을 진행하였습니다
